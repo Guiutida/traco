@@ -508,11 +508,126 @@
   .stat-strip .s {}
   .stat-strip .s .v{ font-family:'IBM Plex Mono', monospace; font-size:26px; color:var(--ink); }
   .stat-strip .s .l{ font-size:11.5px; color:var(--graphite); }
+
+  /* ============ MOBILE RESPONSIVO ============ */
+  @media (max-width:860px){
+
+    /* Main padding */
+    main{ padding:20px 16px 100px; }
+
+    /* Stage head */
+    .stage-head h2{ font-size:18px; }
+    .stage-head p{ font-size:13px; }
+
+    /* Topbar compacta */
+    .topbar{ padding:0 12px 0 14px; height:52px; }
+    .topbar .proj{ font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
+    .theme-toggle span:last-child{ display:none; } /* Esconde label "Claro/Escuro" */
+    .theme-toggle{ padding:7px 10px; }
+
+    /* Drop zone mobile */
+    .drop-zone{ padding:40px 16px; }
+    .drop-zone h3{ font-size:16px; }
+    .drop-zone p{ font-size:13px; }
+    .btn{ width:100%; justify-content:center; }
+    .upload-summary{ flex-direction:column; align-items:stretch; }
+    .upload-summary .btn{ width:100%; justify-content:center; }
+
+    /* Processing: scan grid maior no mobile */
+    .scan-grid{ grid-template-columns:repeat(auto-fill, minmax(60px,1fr)); gap:5px; }
+    .processing-label{ font-size:10px; }
+
+    /* Checkpoint strip: scroll horizontal */
+    .ckpt-strip{ overflow-x:auto; flex-wrap:nowrap; padding:14px; }
+    .ckpt-thumb{ width:52px; height:40px; flex-shrink:0; }
+    .ckpt-status{ flex-direction:column; align-items:stretch; gap:10px; }
+    .ckpt-status .btn{ width:100%; justify-content:center; }
+    .ckpt-legend{ gap:10px; font-size:11px; }
+
+    /* Organize: layout coluna unica */
+    .org-layout{ grid-template-columns:1fr; gap:16px; }
+    .tree{ display:flex; flex-wrap:wrap; gap:6px; }
+    .tree .node{ padding:6px 12px; border:1px solid var(--line-strong); border-radius:20px; font-size:12.5px; }
+    .tree .node.active{ background:var(--redline); color:#fff; border-color:var(--redline); }
+    .tree .apt{ display:none; }
+    .tree .room{ padding-left:0; }
+
+    /* Thumb grid: 2 colunas no mobile */
+    .thumb-grid{ grid-template-columns:repeat(2,1fr); gap:8px; }
+    .thumb .meta{ padding:6px 7px; }
+    .thumb .meta .id{ font-size:9px; }
+    .thumb .actions{ padding:0 7px 7px; gap:4px; }
+    .thumb select{ font-size:9px; padding:2px 3px; }
+    .thumb .x-btn{ font-size:9px; padding:2px 5px; }
+    .hint-bar{ font-size:12px; }
+
+    /* Room section */
+    .room-section-head{ flex-wrap:wrap; gap:6px; }
+
+    /* Markup: layout coluna unica */
+    .mk-layout{ grid-template-columns:1fr; }
+    .mk-list{
+      flex-direction:row;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      max-height:none;
+      gap:8px;
+      padding-bottom:8px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .mk-list-item{ flex-direction:column; min-width:80px; text-align:center; padding:8px 6px; }
+    .mk-list-item img{ width:100%; height:50px; }
+    .mk-list-item span{ font-size:10px; }
+    .canvas-wrap{ max-width:100%; }
+    .toolbar{ gap:4px; }
+    .tool-btn{ padding:8px 10px; font-size:11.5px; }
+    .caption-panel{ order:3; }
+
+    /* Report */
+    .report-grid{ grid-template-columns:repeat(2,1fr); gap:12px; }
+    .stat-strip{ gap:16px; }
+    .stat-strip .s .v{ font-size:20px; }
+    .report-toolbar{ flex-direction:column; }
+    .export-buttons{ flex-direction:column; }
+    .export-buttons .btn{ width:100%; justify-content:center; }
+    .warn-box{ font-size:12px; }
+
+    /* Toast mobile */
+    .toast{ right:10px; left:10px; max-width:none; font-size:13px; }
+
+    /* Barra inferior fixa de etapa atual */
+    .topbar-stage-mobile{
+      display:flex;
+      position:fixed;
+      bottom:0; left:0; right:0;
+      background:var(--sidebar-bg);
+      color:var(--gold, #C4962A);
+      font-family:'IBM Plex Mono', monospace;
+      font-size:10.5px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      padding:10px 16px;
+      justify-content:center;
+      z-index:30;
+      border-top:1px solid rgba(196,150,42,0.2);
+    }
+  }
+
+  @media (max-width:480px){
+    .thumb-grid{ grid-template-columns:repeat(2,1fr); }
+    .report-grid{ grid-template-columns:1fr; }
+    .stat-strip{ flex-direction:column; gap:12px; }
+    .drop-zone{ padding:32px 12px; }
+    .ckpt-thumb{ width:44px; height:34px; }
+    .scan-grid{ grid-template-columns:repeat(auto-fill, minmax(48px,1fr)); }
+  }
 </style>
 </head>
 <body>
 
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="topbar-stage-mobile" id="mobile-stage-bar" style="display:none;">ETAPA 01 · UPLOAD</div>
+
 
 <div class="shell">
   <aside class="sidebar" id="sidebar">
@@ -738,6 +853,9 @@ function goStage(stage){
     report:'ETAPA 06 · RELATÓRIO & EXPORTAÇÃO'
   };
   document.getElementById('topbar-stage').textContent = labels[stage];
+  const mobileBar = document.getElementById('mobile-stage-bar');
+  mobileBar.textContent = labels[stage];
+  mobileBar.style.display = window.innerWidth <= 860 ? 'flex' : 'none';
   render();
   updateSideStats();
   window.scrollTo({top:0, behavior:'smooth'});
