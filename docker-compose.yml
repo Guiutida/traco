@@ -7,8 +7,6 @@ services:
       - "3000"
     volumes:
       - ./traco-demo.html:/app/index.html:ro
-    networks:
-      - coolify
     labels:
       - traefik.enable=true
       # HTTPS router (principal)
@@ -24,7 +22,4 @@ services:
       - traefik.http.middlewares.traco-jr-https.redirectscheme.scheme=https
     restart: unless-stopped
 
-networks:
-  coolify:
-    external: true
 
