@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JR Engenharia — Sistema de Vistoria Fotográfica</title>
+<title>JR Engenharia — Plataforma de Vistorias Técnicas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -621,6 +621,122 @@
     .ckpt-thumb{ width:44px; height:34px; }
     .scan-grid{ grid-template-columns:repeat(auto-fill, minmax(48px,1fr)); }
   }
+
+  /* ============ REPORT TYPE SELECTOR ============ */
+  .report-type-card{
+    background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:3px; padding:20px 24px; margin-bottom:20px;
+    transition:var(--transition-theme);
+  }
+  .type-select{
+    width:100%; padding:11px 14px;
+    border:1.5px solid var(--gold,#C4962A); border-radius:3px;
+    background:var(--paper-2); color:var(--ink);
+    font-size:14px; font-family:'IBM Plex Sans',sans-serif;
+    cursor:pointer; outline:none; transition:all .15s ease; margin-top:8px;
+  }
+  .type-select:focus{ border-color:#E8B84B; box-shadow:0 0 0 3px rgba(196,150,42,.12); }
+  .type-desc{ font-size:12.5px; color:var(--graphite); margin:8px 0 0; line-height:1.5; }
+  .type-custom-input{
+    width:100%; padding:9px 12px; border:1px solid var(--line-strong); border-radius:2px;
+    background:var(--paper); color:var(--ink); font-size:13.5px;
+    font-family:'IBM Plex Sans',sans-serif; margin-top:8px; box-sizing:border-box;
+  }
+
+  /* ============ QUICK TAGS ============ */
+  .qtags-label{ font-size:11.5px; color:var(--graphite); margin-bottom:6px; display:block; }
+  .quick-tags{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .qtag{
+    padding:4px 10px; border:1px solid var(--line-strong);
+    border-radius:20px; background:none; color:var(--graphite);
+    font-size:12px; cursor:pointer; transition:all .15s ease; white-space:nowrap;
+  }
+  .qtag:hover{ border-color:var(--gold,#C4962A); color:var(--gold,#C4962A); }
+  .qtag.selected{ background:var(--gold,#C4962A); color:#fff; border-color:var(--gold,#C4962A); }
+
+  /* ============ SEVERITY ============ */
+  .sev-group{ display:flex; gap:6px; margin:6px 0 12px; }
+  .sev-btn{
+    flex:1; padding:8px 4px; border-radius:3px;
+    border:1.5px solid var(--line-strong); background:none;
+    cursor:pointer; font-size:11.5px; font-family:'IBM Plex Sans',sans-serif;
+    color:var(--graphite); transition:all .15s ease;
+  }
+  .sev-btn:hover{ border-color:var(--ink); color:var(--ink); }
+  .sev-btn.minima.active{ background:#D1FAE5; border-color:#059669; color:#065F46; }
+  .sev-btn.media.active{ background:#FEF3C7; border-color:#D97706; color:#92400E; }
+  .sev-btn.grave.active{ background:#FEE2E2; border-color:#DC2626; color:#991B1B; }
+  [data-theme="dark"] .sev-btn.minima.active{ background:#064E3B; border-color:#10B981; color:#6EE7B7; }
+  [data-theme="dark"] .sev-btn.media.active{ background:#451A03; border-color:#F59E0B; color:#FCD34D; }
+  [data-theme="dark"] .sev-btn.grave.active{ background:#450A0A; border-color:#F87171; color:#FCA5A5; }
+
+  /* ============ LIBRARY PANEL ============ */
+  .field-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+  .btn-lib{
+    background:none; cursor:pointer; color:var(--graphite);
+    font-size:11px; padding:2px 7px; border-radius:2px;
+    border:1px solid var(--line-strong); transition:all .15s ease; flex-shrink:0;
+  }
+  .btn-lib:hover{ color:var(--gold,#C4962A); border-color:var(--gold,#C4962A); }
+  .lib-panel{
+    background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:3px; max-height:180px; overflow-y:auto;
+    margin-top:4px; box-shadow:var(--shadow); position:relative; z-index:20;
+  }
+  .lib-item{
+    padding:9px 12px; font-size:12.5px; cursor:pointer;
+    border-bottom:1px solid var(--line); color:var(--ink); transition:background .1s ease;
+  }
+  .lib-item:last-child{ border-bottom:none; }
+  .lib-item:hover{ background:var(--paper-2); }
+  .lib-item strong{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--gold,#C4962A); display:block; margin-bottom:2px; }
+
+  /* ============ HISTORY HINT ============ */
+  .history-hint{
+    background:var(--blueprint-soft); border:1px solid var(--blueprint);
+    border-radius:3px; padding:8px 10px; font-size:12px;
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:6px;
+  }
+  .reuse-btn{
+    padding:3px 10px; border-radius:2px; background:var(--gold,#C4962A);
+    color:#fff; border:none; cursor:pointer; font-size:11.5px; margin-left:auto; flex-shrink:0;
+  }
+
+  /* ============ RECOMMENDATION OUTPUT ============ */
+  .rec-out{
+    background:var(--blueprint-soft); border:1px solid var(--blueprint);
+    border-left:3px solid var(--gold,#C4962A); border-radius:2px;
+    padding:12px 14px; margin-top:10px; font-size:13px; color:var(--ink); display:none;
+  }
+  .rec-lbl{ font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--gold,#C4962A); display:block; margin-bottom:4px; letter-spacing:.06em; text-transform:uppercase; }
+
+  /* ============ STATS DASHBOARD ============ */
+  .stats-dash{
+    background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:3px; padding:20px 24px; margin-bottom:24px; transition:var(--transition-theme);
+  }
+  .stats-dash-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:14px; }
+  .bar-row{ display:flex; align-items:center; gap:10px; font-size:12px; margin-bottom:8px; }
+  .bar-row label{ width:72px; flex-shrink:0; color:var(--graphite); }
+  .bar-bg{ flex:1; height:8px; background:var(--paper-3); border-radius:4px; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:4px; transition:width .7s cubic-bezier(.22,1,.36,1); min-width:3px; }
+  .bar-fill.minima{ background:#059669; }
+  .bar-fill.media{ background:#D97706; }
+  .bar-fill.grave{ background:#DC2626; }
+  .bar-cnt{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--graphite); width:18px; text-align:right; }
+  .anomaly-cloud{ display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .atag{ padding:3px 9px; border-radius:20px; background:var(--paper-2); border:1px solid var(--line-strong); font-size:11.5px; color:var(--ink); }
+  .atag b{ font-family:'IBM Plex Mono',monospace; color:var(--gold,#C4962A); }
+  .room-list{ display:flex; flex-direction:column; gap:2px; }
+  .room-row{ display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px solid var(--line); }
+  .room-row:last-child{ border-bottom:none; }
+  .room-row b{ font-family:'IBM Plex Mono',monospace; color:var(--ink); }
+  @media (max-width:860px){
+    .stats-dash-grid{ grid-template-columns:1fr; }
+    .report-type-card{ padding:14px 16px; }
+    .sev-group{ gap:4px; }
+    .sev-btn{ font-size:10.5px; padding:7px 3px; }
+  }
 </style>
 </head>
 <body>
@@ -733,6 +849,229 @@ function roomSVG(type){
 }
 
 let PHOTOS = [];
+
+/* =========================================================
+   REPORT TYPES CONFIG
+   ========================================================= */
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+const REPORT_TYPES = {
+  cautelar:{
+    label:'Vistoria Cautelar de Vizinhança',
+    desc:'Documentação técnica do estado de conservação anterior a obras ou intervenções.',
+    panelTitle:'Legenda Inteligente',
+    fields:[
+      {id:'obs', label:'O que foi observado?', ph:'ex.: fissura vertical'},
+      {id:'loc', label:'Localização na foto', ph:'ex.: parede lateral direita'},
+    ],
+    suggestions:['Fissura','Trinca','Rachadura','Infiltração','Umidade','Mancha','Pintura','Piso','Janela','Porta','Forro','Revestimento'],
+    library:[
+      {title:'Fissura vertical de tração', text:'Fissura vertical de tração com abertura inferior a 0,5mm, sem indícios de movimentação ativa'},
+      {title:'Trinca diagonal em alvenaria', text:'Trinca diagonal em alvenaria de vedação, possivelmente relacionada a recalque diferencial'},
+      {title:'Mancha de umidade ascendente', text:'Mancha de umidade ascendente por capilaridade, com bolor superficial localizado'},
+      {title:'Descascamento de pintura', text:'Descascamento de pintura com exposição do emboço em área de aproximadamente 0,2m²'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' na '+loc:''} da ${room} do apartamento ${apt}`;
+      if(sev==='grave') return `${base}, com extensão e características que indicam necessidade de intervenção técnica imediata.`;
+      if(sev==='media') return `${base}. Recomenda-se monitoramento periódico e avaliação por profissional habilitado.`;
+      return `${base}, sem indícios de comprometimento estrutural aparente no momento da vistoria.`;
+    },
+    recommendations:{
+      'fissura':['Instalar fissurômetros para monitoramento contínuo','Injeção de resina epóxi estrutural após estabilização','Avaliação estrutural por engenheiro calculista'],
+      'infiltração':['Recuperar a impermeabilização da área afetada','Verificar origem da infiltração — cobertura ou tubulações'],
+      'umidade':['Tratar a impermeabilização por capilaridade','Verificar sistema de drenagem periférica'],
+      default:['Monitorar a evolução nas próximas vistorias','Registrar e notificar responsável','Avaliar necessidade de reparo localizado'],
+    }
+  },
+  patologia:{
+    label:'Laudo Técnico de Patologia',
+    desc:'Diagnóstico e análise de manifestações patológicas em estruturas de concreto e alvenaria.',
+    panelTitle:'Diagnóstico Patológico',
+    fields:[
+      {id:'obs', label:'Manifestação patológica', ph:'ex.: fissura de tração diagonal'},
+      {id:'loc', label:'Localização', ph:'ex.: viga de bordo, face inferior'},
+      {id:'causa', label:'Provável causa', ph:'ex.: movimentação térmica'},
+    ],
+    suggestions:['Fissura','Trinca','Infiltração','Armadura exposta','Carbonatação','Eflorescência','Lixiviação','Delaminação','Bolor','Corrosão'],
+    library:[
+      {title:'Fissura de retração plástica', text:'Fissura de retração plástica no concreto com abertura entre 0,1mm e 0,3mm, sem interligação aparente'},
+      {title:'Armadura exposta com corrosão', text:'Armadura exposta com início de processo corrosivo, apresentando pites de corrosão e manchas ferruginosas'},
+      {title:'Eflorescência em alvenaria', text:'Eflorescência salina na superfície da alvenaria, indicativo de percolação de água e dissolução de sais'},
+      {title:'Carbonatação do concreto', text:'Concreto com frente de carbonatação avançada, comprometendo a alcalinidade protetora da armadura'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' na '+loc:''}, apartamento ${apt}`;
+      if(sev==='grave') return `${base}. Manifestação patológica de grau avançado com potencial comprometimento estrutural — intervenção imediata necessária.`;
+      if(sev==='media') return `${base}. Manifestação de grau médio com potencial evolutivo — reparo técnico a curto prazo recomendado.`;
+      return `${base}. Manifestação inicial sem comprometimento estrutural imediato — monitoramento periódico recomendado.`;
+    },
+    recommendations:{
+      'fissura':['Mapear todas as fissuras com fissurômetro e registrar datas','Injeção de grout ou resina epóxi conforme abertura','Estudo de origem por engenheiro calculista'],
+      'armadura exposta':['Limpeza mecânica da armadura com escova de aço','Tratamento com inibidor de corrosão à base de silano','Reconstituição do cobrimento com argamassa expansiva'],
+      'eflorescência':['Limpeza com solução ácida diluída e neutralização','Impermeabilização do substrato após secagem','Monitoramento trimestral da origem da umidade'],
+      default:['Realizar ensaio de carbonatação por fenolftaleína','Elaborar plano de manutenção preventiva','Monitorar com periodicidade trimestral'],
+    }
+  },
+  inspecao:{
+    label:'Inspeção Predial',
+    desc:'Levantamento técnico de anomalias em sistemas construtivos de edificações conforme ABNT NBR 16747.',
+    panelTitle:'Registro de Inspeção',
+    fields:[
+      {id:'obs', label:'Sistema inspecionado', ph:'ex.: impermeabilização de laje'},
+      {id:'loc', label:'Localização / Elemento', ph:'ex.: cobertura, calha norte'},
+      {id:'causa', label:'Estado de conservação', ph:'ex.: deteriorado, com falhas pontuais'},
+    ],
+    suggestions:['Impermeabilização','Estrutura','Fachada','Cobertura','Elétrica','Hidráulica','SPDA','Ar-condicionado','Elevadores','Esquadrias'],
+    library:[
+      {title:'Impermeabilização comprometida', text:'Sistema de impermeabilização com falhas localizadas, apresentando pontos de infiltração e bolhas na manta'},
+      {title:'Fachada com descolamento cerâmico', text:'Revestimento cerâmico da fachada com som cavo em percussão, indicando descolamento e risco de desprendimento'},
+      {title:'Elétrica em não conformidade', text:'Quadro elétrico sem identificação de circuitos e sem dispositivo DR — em desconformidade com ABNT NBR 5410'},
+      {title:'Calha obstruída', text:'Calha de drenagem da cobertura obstruída por resíduos, comprometendo escoamento pluvial'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' — '+loc:''}, verificado no apartamento ${apt}`;
+      if(sev==='grave') return `${base}. Anomalia de Grau 3 (crítica) — requer ação imediata para garantir segurança dos usuários e da edificação.`;
+      if(sev==='media') return `${base}. Anomalia de Grau 2 (regular) — ação corretiva deve ser planejada e executada a curto prazo.`;
+      return `${base}. Anomalia de Grau 1 (mínima) — manutenção preventiva recomendada dentro do prazo regular do plano de manutenção.`;
+    },
+    recommendations:{
+      'impermeabilização':['Recuperação localizada com manta ou cristalização','Substituição total do sistema impermeabilizante com garantia'],
+      'fachada':['Prospecção de descolamentos por percussão em 100% da área','Remoção preventiva e recomposição do revestimento'],
+      'elétrica':['Identificação imediata de todos os circuitos do quadro','Instalação de disjuntores DR conforme NBR 5410'],
+      default:['Inserir no plano de manutenção preventiva','Contratar serviço especializado para reparo','Monitorar nas próximas inspeções anuais'],
+    }
+  },
+  locaticia:{
+    label:'Vistoria Locatícia',
+    desc:'Registro do estado de conservação do imóvel na entrada ou saída do locatário.',
+    panelTitle:'Registro Locatício',
+    fields:[
+      {id:'obs', label:'Item / Elemento', ph:'ex.: porta de madeira'},
+      {id:'loc', label:'Localização no ambiente', ph:'ex.: dormitório, quarto 1'},
+      {id:'causa', label:'Estado encontrado', ph:'ex.: riscado, quebrado, bom estado'},
+    ],
+    suggestions:['Pintura','Piso','Portas','Janelas','Louças','Metais','Azulejos','Tomadas','Armários','Vidros','Rodapés','Teto'],
+    library:[
+      {title:'Parede com riscos e manchas', text:'Parede com riscos superficiais e manchas de umidade no terço inferior, acima do nível do rodapé'},
+      {title:'Piso laminado danificado', text:'Piso laminado com ondulação e descolamento localizado em área de aproximadamente 0,5m²'},
+      {title:'Janela com vidro trincado', text:'Janela de correr com vidro trincado no canto inferior direito, sem risco imediato de queda'},
+      {title:'Em bom estado geral', text:'Elemento em bom estado de conservação, sem danos aparentes no momento da vistoria'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' no '+loc:''} do ${room}`;
+      if(sev==='grave') return `${base}, com dano expressivo comprometendo funcionalidade e estética. Necessita substituição.`;
+      if(sev==='media') return `${base}, com desgaste além do normal de uso. Recomenda-se reparo antes da próxima locação.`;
+      return `${base}, com desgaste natural de uso. Registrado para fins de controle de estado do imóvel.`;
+    },
+    recommendations:{
+      'pintura':['Lixar, preparar superfície e repintar a área afetada','Repintura geral do ambiente com tinta lavável'],
+      'piso':['Substituição das peças danificadas por peças equivalentes','Rejuntamento e recuperação pontual dos vincos'],
+      default:['Registrar em laudo e notificar locatário formalmente','Solicitar reparo até data estipulada no contrato','Descontar em caução se reparo não for realizado'],
+    }
+  },
+  entrega:{
+    label:'Entrega de Obra',
+    desc:'Vistoria técnica de recebimento de unidades ao término da construção.',
+    panelTitle:'Vistoria de Entrega',
+    fields:[
+      {id:'obs', label:'Item verificado', ph:'ex.: esquadria de alumínio'},
+      {id:'loc', label:'Localização', ph:'ex.: fachada, sala de estar'},
+      {id:'causa', label:'Não conformidade', ph:'ex.: folga excessiva, risco, selagem ausente'},
+    ],
+    suggestions:['Esquadrias','Revestimento','Pintura','Instalações','Piso','Teto','Hidráulica','Elétrica','Acabamentos','Fachada'],
+    library:[
+      {title:'Esquadria com folga excessiva', text:'Esquadria de alumínio com folga excessiva no fechamento, comprometendo vedação e estanqueidade'},
+      {title:'Rejunte com falha', text:'Rejunte de piso cerâmico com falhas e descontinuidades, permitindo percolação de água'},
+      {title:'Ponto elétrico não funcional', text:'Tomada/interruptor sem funcionamento confirmado em teste com amperímetro'},
+      {title:'Em conformidade', text:'Item verificado em plena conformidade com o projeto e as especificações técnicas contratadas'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' na '+loc:''}, unidade ${apt}`;
+      if(sev==='grave') return `${base}. Item em não conformidade grave — não atende às especificações técnicas. Exige correção antes da entrega das chaves.`;
+      if(sev==='media') return `${base}. Item com não conformidade regular — exige correção a ser sanada dentro do prazo de assistência técnica.`;
+      return `${base}. Item verificado em conformidade com os padrões de qualidade contratados.`;
+    },
+    recommendations:{
+      'esquadria':['Regularizar folga e ajustar vedação','Substituir perfis danificados com garantia do fabricante'],
+      'pintura':['Repintura localizada com tinta de mesma especificação e lote'],
+      default:['Incluir em lista de pendências de entrega (punch list)','Definir prazo de execução com a construtora','Emitir Termo de Entrega somente após sanadas as pendências'],
+    }
+  },
+  recebimento:{
+    label:'Recebimento de Imóvel',
+    desc:'Vistoria técnica para aceite e recebimento formal de imóvel.',
+    panelTitle:'Vistoria de Recebimento',
+    fields:[
+      {id:'obs', label:'Item verificado', ph:'ex.: porta de entrada'},
+      {id:'loc', label:'Localização', ph:'ex.: hall de entrada'},
+      {id:'causa', label:'Condição', ph:'ex.: conforme, com ressalvas, rejeitado'},
+    ],
+    suggestions:['Estrutura','Cobertura','Fachada','Instalações','Acabamentos','Esquadrias','Impermeabilização','Pintura'],
+    library:[
+      {title:'Aceite com ressalvas', text:'Item aceito com ressalvas documentadas, aguardando regularização no prazo combinado'},
+      {title:'Item rejeitado', text:'Item rejeitado por não atender às especificações técnicas e/ou contratuais'},
+      {title:'Item aceito', text:'Item aceito sem ressalvas, em conformidade com o projeto e as especificações'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' na '+loc:''}, unidade ${apt}`;
+      if(sev==='grave') return `${base}: item rejeitado — não conformidade impeditiva para aceite formal do imóvel.`;
+      if(sev==='media') return `${base}: aceito com ressalvas — correção necessária no prazo de garantia estabelecido.`;
+      return `${base}: aceito sem ressalvas, em plena conformidade com o projeto.`;
+    },
+    recommendations:{
+      default:['Formalizar aceite condicionado via Termo de Recebimento','Notificar responsável sobre itens pendentes','Acompanhar regularização dentro do prazo de garantia legal'],
+    }
+  },
+  fotografico:{
+    label:'Relatório Fotográfico',
+    desc:'Documentação fotográfica técnica de obras, processos ou condições de imóvel.',
+    panelTitle:'Registro Fotográfico',
+    fields:[
+      {id:'obs', label:'Descrição da imagem', ph:'ex.: vista geral da fachada norte'},
+      {id:'loc', label:'Localização', ph:'ex.: pavimento térreo, bloco B'},
+    ],
+    suggestions:['Vista geral','Detalhe','Estrutura','Fachada','Cobertura','Pavimento','Obra em andamento','Acabamento'],
+    library:[
+      {title:'Vista geral do ambiente', text:'Imagem panorâmica do ambiente, registrando condições gerais de conservação'},
+      {title:'Detalhe de anomalia', text:'Detalhe fotográfico da anomalia identificada, com escala de referência'},
+      {title:'Registro de obra', text:'Registro do estágio de execução da obra conforme cronograma físico-financeiro'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' — '+loc:''}, apartamento ${apt}`;
+      if(sev==='grave') return `${base}. Situação requer atenção e registro imediato para documentação.`;
+      if(sev==='media') return `${base}. Acompanhamento recomendado.`;
+      return `${base}, registrado conforme objetivo da vistoria fotográfica.`;
+    },
+    recommendations:{
+      default:['Manter arquivo fotográfico organizado por data e local','Incluir escala de referência nas próximas fotografias'],
+    }
+  },
+  personalizado:{
+    label:'Personalizado',
+    desc:'Tipo de laudo personalizado conforme necessidade específica do projeto.',
+    panelTitle:'Registro Técnico',
+    fields:[
+      {id:'obs', label:'Ocorrência identificada', ph:'ex.: anomalia verificada'},
+      {id:'loc', label:'Localização', ph:'ex.: ambiente ou elemento específico'},
+    ],
+    suggestions:['Fissura','Infiltração','Umidade','Revestimento','Instalações','Estrutura','Fachada','Cobertura','Piso','Teto'],
+    library:[
+      {title:'Anomalia estrutural', text:'Anomalia estrutural identificada, necessitando avaliação técnica especializada para diagnóstico preciso'},
+      {title:'Sem ocorrência relevante', text:'Sem ocorrência relevante no elemento vistoriado, em conformidade com o esperado'},
+    ],
+    caption:(obs,loc,room,apt,sev)=>{
+      const base=`${cap(obs)}${loc?' na '+loc:''} do ${room}, apartamento ${apt}`;
+      if(sev==='grave') return `${base}. Situação requer intervenção técnica imediata.`;
+      if(sev==='media') return `${base}. Recomenda-se acompanhamento e avaliação especializada.`;
+      return `${base}, registrado conforme vistoria técnica.`;
+    },
+    recommendations:{
+      default:['Monitorar evolução do item registrado','Avaliar necessidade de intervenção especializada','Documentar e arquivar para referência futura'],
+    }
+  },
+};
+
 function buildPhotos(){
   PHOTOS = [];
   let seq = 800;
@@ -767,6 +1106,10 @@ let STATE = {
   currentMarkupId: null,
   currentTool: 'circle',
   confirmedCheckpoints: new Set(),
+  reportType: 'cautelar',
+  severity: 'media',
+  captionHistory: [],
+  customTypeName: '',
 };
 
 /* =========================================================
@@ -882,11 +1225,20 @@ function render(){
 
 /* ---------- 01 UPLOAD ---------- */
 function renderUpload(main){
+  const rt = REPORT_TYPES[STATE.reportType] || REPORT_TYPES.cautelar;
   main.innerHTML = `
     <div class="stage-enter">
       <div class="stage-head stage-enter-child">
-        <h2>Envie a pasta da vistoria</h2>
-        <p>Arraste a pasta inteira, sem separar nada antes. Nesta demonstração, simulamos o envio de uma pasta real de vistoria.</p>
+        <h2>Nova vistoria técnica</h2>
+        <p>Selecione o tipo de laudo, depois envie a pasta de fotos. A IA organiza tudo automaticamente.</p>
+      </div>
+      <div class="report-type-card stage-enter-child">
+        <div class="eyebrow">Tipo de Laudo Técnico</div>
+        <select id="report-type-sel" class="type-select">
+          ${Object.entries(REPORT_TYPES).map(([k,v])=>`<option value="${k}" ${STATE.reportType===k?'selected':''}>${v.label}</option>`).join('')}
+        </select>
+        <p class="type-desc" id="type-desc">${rt.desc}</p>
+        ${STATE.reportType==='personalizado'?`<input class="type-custom-input" id="custom-type-name" type="text" placeholder="Digite o nome do laudo técnico..." value="${STATE.customTypeName}">`:``}
       </div>
       <div class="drop-zone stage-enter-child" id="drop-zone">
         <h3>Arraste a pasta aqui</h3>
@@ -901,8 +1253,29 @@ function renderUpload(main){
   ['dragenter','dragover'].forEach(ev=> dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.add('active'); }));
   ['dragleave','drop'].forEach(ev=> dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.remove('active'); if(ev==='drop') simulateUpload(); }));
   document.getElementById('btn-simulate').addEventListener('click', simulateUpload);
+
+  // Report type selector
+  document.getElementById('report-type-sel').addEventListener('change', (e)=>{
+    STATE.reportType = e.target.value;
+    const newRt = REPORT_TYPES[STATE.reportType];
+    document.getElementById('type-desc').textContent = newRt.desc;
+    // Show/hide custom input
+    const existing = document.getElementById('custom-type-name');
+    if(STATE.reportType === 'personalizado' && !existing){
+      const inp = document.createElement('input');
+      inp.className='type-custom-input'; inp.id='custom-type-name'; inp.type='text';
+      inp.placeholder='Digite o nome do laudo técnico...'; inp.value=STATE.customTypeName;
+      inp.addEventListener('input', ()=>{ STATE.customTypeName = inp.value; });
+      e.target.closest('.report-type-card').appendChild(inp);
+    } else if(STATE.reportType !== 'personalizado' && existing){
+      existing.remove();
+    }
+  });
+  const customInp = document.getElementById('custom-type-name');
+  if(customInp) customInp.addEventListener('input', ()=>{ STATE.customTypeName = customInp.value; });
   if(STATE.uploaded) showUploadSummary();
 }
+
 
 function simulateUpload(){
   STATE.uploaded = true;
@@ -1220,11 +1593,14 @@ function renderMarkup(main){
   if(!STATE.currentMarkupId){
     STATE.currentMarkupId = (eligible[0] && eligible[0].id) || null;
   }
+  const rt = REPORT_TYPES[STATE.reportType] || REPORT_TYPES.cautelar;
+  const similarCaption = STATE.captionHistory.length > 0 ? STATE.captionHistory[STATE.captionHistory.length-1] : null;
+
   main.innerHTML = `
     <div class="stage-enter">
       <div class="stage-head stage-enter-child">
-        <h2>Marcação manual</h2>
-        <p>Selecione uma foto, marque a ocorrência com os instrumentos abaixo e descreva o que foi observado. O Traço só usa o que você marcou para escrever a legenda.</p>
+        <h2>${rt.panelTitle}</h2>
+        <p>Selecione uma foto, marque a ocorrência com os instrumentos e preencha os campos. A IA analisa <strong>apenas a área demarcada</strong> para compor a legenda.</p>
       </div>
       <div class="mk-layout">
         <div class="mk-list" id="mk-list">
@@ -1232,7 +1608,7 @@ function renderMarkup(main){
             <div class="mk-list-item ${p.id===STATE.currentMarkupId?'active':''}" data-id="${p.id}">
               <img src="${p.img}">
               <span>Apto ${p.apt} · ${ROOM_META[p.room].label}</span>
-              ${p.marked ? '<span class="ok">✓</span>' : ''}
+              ${p.marked ? `<span class="ok" title="Severidade: ${p.severity||'média'}">✓</span>` : ''}
             </div>
           `).join('')}
         </div>
@@ -1249,31 +1625,62 @@ function renderMarkup(main){
           </div>
         </div>
         <div class="caption-panel panel" style="padding:20px;">
-          <div class="eyebrow">Legenda inteligente</div>
-          <div class="field">
-            <label>O que foi observado?</label>
-            <input id="obs-input" type="text" placeholder="ex.: fissura vertical">
+          <div class="eyebrow">${rt.panelTitle}</div>
+
+          <span class="qtags-label">Grau de severidade</span>
+          <div class="sev-group">
+            <button class="sev-btn minima ${STATE.severity==='minima'?'active':''}" data-sev="minima">🟢 Mínima</button>
+            <button class="sev-btn media ${STATE.severity==='media'?'active':''}" data-sev="media">🟡 Média</button>
+            <button class="sev-btn grave ${STATE.severity==='grave'?'active':''}" data-sev="grave">🔴 Grave</button>
           </div>
-          <div class="field">
-            <label>Localização na foto</label>
-            <input id="loc-input" type="text" placeholder="ex.: parede lateral direita">
+
+          ${rt.fields.map((f,i)=>`
+            <div class="field">
+              <div class="field-header">
+                <label>${f.label}</label>
+                ${i===0?`<button class="btn-lib" id="btn-lib">📚 Biblioteca</button>`:''}
+              </div>
+              <input id="${f.id}-input" type="text" placeholder="${f.ph}" autocomplete="off">
+              ${i===0?`<div class="lib-panel" id="lib-panel" style="display:none;">
+                ${rt.library.map(l=>`<div class="lib-item" data-text="${l.text}"><strong>${l.title}</strong>${l.text.substring(0,70)}…</div>`).join('')}
+              </div>`:''}
+            </div>
+          `).join('')}
+
+          <span class="qtags-label">Sugestões rápidas</span>
+          <div class="quick-tags" id="quick-tags">
+            ${rt.suggestions.map(s=>`<button class="qtag" data-tag="${s}">${s}</button>`).join('')}
           </div>
-          <button class="btn btn-primary" id="btn-gen-caption" style="width:100%; justify-content:center;">Gerar legenda</button>
+
+          ${similarCaption?`
+            <div class="history-hint" id="history-hint">
+              💡 <span style="color:var(--ink);">Reutilizar descrição similar?</span>
+              <em style="flex:1;min-width:0;font-size:11px;color:var(--graphite);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">"${similarCaption.text.substring(0,55)}…"</em>
+              <button class="reuse-btn" id="btn-reuse">Reutilizar</button>
+            </div>
+          `:''}
+
+          <button class="btn btn-primary" id="btn-gen-caption" style="width:100%;justify-content:center;margin-top:8px;">✦ Gerar legenda com IA</button>
+
           <div class="caption-out" id="caption-out">
-            <span class="lbl">Legenda</span>
-            <span id="caption-text">Marque a ocorrência na foto e descreva o que foi observado.</span>
+            <span class="lbl">Legenda gerada</span>
+            <span id="caption-text">Marque a ocorrência na foto e preencha os campos acima.</span>
           </div>
-          <p class="principle-note">A IA nunca diagnostica sozinha — a legenda usa apenas a marcação e a descrição informadas pelo engenheiro.</p>
-          <button class="btn btn-ghost btn-sm" id="btn-goto-report" style="width:100%; justify-content:center; margin-top:14px;">Ir para relatório &amp; exportação →</button>
+
+          <button class="btn btn-ghost btn-sm" id="btn-gen-rec" style="width:100%;justify-content:center;margin-top:8px;display:none;">Gerar recomendação técnica →</button>
+          <div class="rec-out" id="rec-out">
+            <span class="rec-lbl">Recomendação técnica</span>
+            <span id="rec-text"></span>
+          </div>
+
+          <p class="principle-note" style="margin-top:14px;">A IA analisa apenas a região marcada na foto — a legenda é composta a partir da marcação e da descrição fornecida pelo engenheiro.</p>
+          <button class="btn btn-ghost btn-sm" id="btn-goto-report" style="width:100%;justify-content:center;margin-top:12px;">Ir para relatório &amp; exportação →</button>
         </div>
       </div>
     </div>
   `;
 
-  document.getElementById('btn-goto-report').addEventListener('click', ()=>{
-    setStageEnabled('report');
-    goStage('report');
-  });
+  document.getElementById('btn-goto-report').addEventListener('click', ()=>{ setStageEnabled('report'); goStage('report'); });
 
   document.querySelectorAll('#mk-list .mk-list-item').forEach(item=>{
     item.addEventListener('click', ()=>{ STATE.currentMarkupId = item.dataset.id; renderMarkup(main); });
@@ -1286,10 +1693,65 @@ function renderMarkup(main){
     const p = currentPhoto();
     if(p){ p.annotations = []; redrawCanvas(); }
   });
+
+  // Severity
+  document.querySelectorAll('.sev-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      STATE.severity = btn.dataset.sev;
+      document.querySelectorAll('.sev-btn').forEach(b=>{ b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
+  // Library
+  const btnLib = document.getElementById('btn-lib');
+  const libPanel = document.getElementById('lib-panel');
+  if(btnLib && libPanel){
+    btnLib.addEventListener('click', (e)=>{ e.stopPropagation(); libPanel.style.display = libPanel.style.display==='none'?'block':'none'; });
+    libPanel.querySelectorAll('.lib-item').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        const firstInput = document.getElementById(rt.fields[0].id+'-input');
+        if(firstInput){ firstInput.value = item.dataset.text; }
+        libPanel.style.display = 'none';
+        toast('Modelo de texto inserido da biblioteca técnica.');
+      });
+    });
+  }
+  document.addEventListener('click', ()=>{ const lp=document.getElementById('lib-panel'); if(lp) lp.style.display='none'; }, {once:true});
+
+  // Quick tags
+  document.querySelectorAll('.qtag').forEach(tag=>{
+    tag.addEventListener('click', ()=>{
+      const firstInput = document.getElementById(rt.fields[0].id+'-input');
+      if(firstInput){
+        firstInput.value = tag.dataset.tag;
+        tag.classList.add('selected');
+        setTimeout(()=>tag.classList.remove('selected'), 700);
+        const nextField = rt.fields[1];
+        if(nextField){ const ni=document.getElementById(nextField.id+'-input'); if(ni) ni.focus(); }
+      }
+    });
+  });
+
+  // History reuse
+  const btnReuse = document.getElementById('btn-reuse');
+  if(btnReuse && similarCaption){
+    btnReuse.addEventListener('click', ()=>{
+      const firstInput = document.getElementById(rt.fields[0].id+'-input');
+      if(firstInput) firstInput.value = similarCaption.obs||'';
+      const locInput = document.getElementById('loc-input');
+      if(locInput) locInput.value = similarCaption.loc||'';
+      toast('Descrição anterior reutilizada.');
+    });
+  }
+
   document.getElementById('btn-gen-caption').addEventListener('click', generateCaption);
+  const btnRec = document.getElementById('btn-gen-rec');
+  if(btnRec) btnRec.addEventListener('click', generateRecommendation);
 
   setupCanvas();
 }
+
 
 function currentPhoto(){ return PHOTOS.find(p=>p.id===STATE.currentMarkupId); }
 
@@ -1377,37 +1839,131 @@ function redrawCanvas(){
 
 function generateCaption(){
   const p = currentPhoto();
-  const obs = document.getElementById('obs-input').value.trim();
-  const loc = document.getElementById('loc-input').value.trim();
+  const rt = REPORT_TYPES[STATE.reportType] || REPORT_TYPES.cautelar;
+  const firstField = rt.fields[0];
+  const obsInput = document.getElementById(firstField.id+'-input');
+  const locInput = document.getElementById('loc-input') || document.getElementById((rt.fields[1]?.id||'loc')+'-input');
+  const obs = obsInput ? obsInput.value.trim() : '';
+  const loc = locInput ? locInput.value.trim() : '';
   const out = document.getElementById('caption-text');
-  if(!p.annotations.length){
+
+  if(!p || !p.annotations.length){
     out.textContent = 'Marque a ocorrência na foto antes de gerar a legenda.';
     return;
   }
   if(!obs){
-    out.textContent = 'Descreva o que foi observado para a IA compor a legenda.';
+    out.textContent = `Preencha o campo "${firstField.label}" para a IA compor a legenda.`;
     return;
   }
-  const obsCap = obs.charAt(0).toUpperCase() + obs.slice(1);
-  const roomPhrase = ROOM_META[p.room].prep;
-  const caption = `${obsCap} observada${loc ? ' na ' + loc : ''} da ${roomPhrase} do apartamento ${p.apt}.`;
-  out.textContent = caption;
-  p.caption = caption;
-  p.marked = true;
-  updateSideStats();
-  const item = document.querySelector(`#mk-list [data-id="${p.id}"]`);
-  if(item && !item.querySelector('.ok')){
-    const ok = document.createElement('span'); ok.className='ok'; ok.textContent='✓';
-    item.appendChild(ok);
-  }
-  toast('Legenda gerada e foto marcada como concluída.');
+
+  // Show scanning animation on the last annotation
+  const ann = p.annotations[p.annotations.length-1];
+  if(ann) animateScan(ann);
+
+  out.textContent = '⏳ Analisando região marcada...';
+
+  setTimeout(()=>{
+    const caption = rt.caption(obs, loc, ROOM_META[p.room].label, p.apt, STATE.severity);
+    out.textContent = caption;
+    p.caption = caption;
+    p.marked = true;
+    p.severity = STATE.severity;
+
+    // Save to history for reuse
+    STATE.captionHistory.push({ obs, loc, text: caption, room: p.room, apt: p.apt });
+    if(STATE.captionHistory.length > 6) STATE.captionHistory.shift();
+
+    updateSideStats();
+    const item = document.querySelector(`#mk-list [data-id="${p.id}"]`);
+    if(item && !item.querySelector('.ok')){
+      const ok = document.createElement('span'); ok.className='ok'; ok.title=`Severidade: ${STATE.severity}`; ok.textContent='✓';
+      item.appendChild(ok);
+    }
+
+    // Show recommendation button
+    const btnRec = document.getElementById('btn-gen-rec');
+    if(btnRec) btnRec.style.display = 'flex';
+
+    toast('✦ Legenda gerada — área marcada analisada pela IA.');
+  }, 900);
 }
+
+function animateScan(ann){
+  const canvas = document.getElementById('mk-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let alpha = 0; let rising = true;
+  const iv = setInterval(()=>{
+    redrawCanvas();
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = '#E8B84B'; ctx.lineWidth = 4;
+    ctx.shadowColor = '#E8B84B'; ctx.shadowBlur = 14;
+    if(ann.type==='circle'){
+      const rx=Math.abs(ann.x2-ann.x1)/2, ry=Math.abs(ann.y2-ann.y1)/2;
+      const cx=(ann.x1+ann.x2)/2, cy=(ann.y1+ann.y2)/2;
+      ctx.beginPath(); ctx.ellipse(cx,cy,Math.max(rx+8,16),Math.max(ry+8,16),0,0,2*Math.PI); ctx.stroke();
+    } else if(ann.type==='rect'){
+      ctx.strokeRect(Math.min(ann.x1,ann.x2)-6,Math.min(ann.y1,ann.y2)-6,Math.abs(ann.x2-ann.x1)+12,Math.abs(ann.y2-ann.y1)+12);
+    } else {
+      ctx.beginPath(); ctx.moveTo(ann.x1,ann.y1); ctx.lineTo(ann.x2,ann.y2); ctx.stroke();
+    }
+    ctx.restore();
+    if(rising){ alpha+=0.08; if(alpha>=1) rising=false; }
+    else { alpha-=0.08; if(alpha<=0) clearInterval(iv); }
+  }, 28);
+}
+
+function generateRecommendation(){
+  const p = currentPhoto();
+  const rt = REPORT_TYPES[STATE.reportType] || REPORT_TYPES.cautelar;
+  const obsInput = document.getElementById(rt.fields[0].id+'-input');
+  const obs = (obsInput ? obsInput.value.trim() : '').toLowerCase();
+  const recOut = document.getElementById('rec-out');
+  const recText = document.getElementById('rec-text');
+  if(!recOut || !recText) return;
+
+  let recs = rt.recommendations.default || ['Monitorar evolução', 'Avaliar necessidade de intervenção'];
+  for(const key of Object.keys(rt.recommendations)){
+    if(key !== 'default' && obs.includes(key.toLowerCase())){
+      recs = rt.recommendations[key];
+      break;
+    }
+  }
+
+  const urgency = STATE.severity==='grave' ? '⚠️ Urgente — ' : STATE.severity==='media' ? '📋 A curto prazo — ' : '🔧 Preventivo — ';
+  const chosen = recs[Math.floor(Math.random()*recs.length)];
+  recText.textContent = urgency + chosen;
+  recOut.style.display = 'block';
+  if(p) p.recommendation = recText.textContent;
+  toast('Recomendação técnica gerada.');
+}
+
 
 /* ---------- 06 REPORT ---------- */
 function renderReport(main){
+  const rt = REPORT_TYPES[STATE.reportType] || REPORT_TYPES.cautelar;
   const marked = PHOTOS.filter(p=>p.marked && !p.excluded);
   const unmarked = PHOTOS.filter(p=>!p.marked && !p.excluded).length;
   const apts = APARTMENTS;
+
+  // Compute statistics
+  const sevCounts = {minima:0, media:0, grave:0};
+  const anomalyCounts = {};
+  const roomCounts = {};
+  marked.forEach(p=>{
+    const s = p.severity||'media';
+    sevCounts[s] = (sevCounts[s]||0)+1;
+    if(p.caption){
+      const word = p.caption.split(' ')[0].toLowerCase().replace(/[^a-záéíóúâêîôûãõç]/g,'');
+      if(word.length > 2) anomalyCounts[word] = (anomalyCounts[word]||0)+1;
+    }
+    const rl = ROOM_META[p.room]?ROOM_META[p.room].label:p.room;
+    roomCounts[rl] = (roomCounts[rl]||0)+1;
+  });
+  const total = marked.length||1;
+  const topAnomalies = Object.entries(anomalyCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const roomEntries = Object.entries(roomCounts).sort((a,b)=>b[1]-a[1]);
 
   let body = '';
   apts.forEach(apt=>{
@@ -1419,7 +1975,12 @@ function renderReport(main){
       if(!photos.length) return;
       body += `<h4 class="room-report-title">${ROOM_META[room].label}</h4><div class="report-grid">`;
       photos.forEach(p=>{
-        body += `<div class="report-card"><div class="frame"><img src="${p.img}"></div><div class="cap">${p.caption}</div></div>`;
+        const sevLabel = p.severity==='grave'?'🔴':p.severity==='media'?'🟡':'🟢';
+        body += `<div class="report-card">
+          <div class="frame"><img src="${p.img}"></div>
+          <div class="cap">${sevLabel} ${p.caption}</div>
+          ${p.recommendation?`<div style="font-size:11px;color:var(--graphite);padding:6px 10px;border-top:1px solid var(--line);">💡 ${p.recommendation}</div>`:''}
+        </div>`;
       });
       body += `</div>`;
     });
@@ -1429,14 +1990,57 @@ function renderReport(main){
   main.innerHTML = `
     <div class="stage-enter">
       <div class="stage-head stage-enter-child">
-        <h2>Relatório fotográfico</h2>
+        <h2>${rt.label}</h2>
         <p>Fotos marcadas, organizadas por apartamento e ambiente, prontas para exportação.</p>
       </div>
+
       <div class="stat-strip stage-enter-child">
-        <div class="s"><div class="v mono">${marked.length}</div><div class="l">fotos com legenda</div></div>
-        <div class="s"><div class="v mono">${PHOTOS.filter(p=>p.excluded).length}</div><div class="l">excluídas da vistoria</div></div>
-        <div class="s"><div class="v mono">~2,4h</div><div class="l">tempo estimado economizado</div></div>
+        <div class="s"><div class="v mono">${marked.length}</div><div class="l">ocorrências registradas</div></div>
+        <div class="s"><div class="v mono">${PHOTOS.filter(p=>p.excluded).length}</div><div class="l">fotos excluídas</div></div>
+        <div class="s"><div class="v mono">${sevCounts.grave}</div><div class="l">ocorrências graves</div></div>
+        <div class="s"><div class="v mono">~2,4h</div><div class="l">tempo economizado</div></div>
       </div>
+
+      ${marked.length > 0 ? `
+        <div class="stats-dash stage-enter-child">
+          <div class="eyebrow">Análise da vistoria</div>
+          <div class="stats-dash-grid">
+            <div>
+              <span class="qtags-label" style="margin-bottom:10px;">Distribuição por severidade</span>
+              <div class="bar-row">
+                <label>🔴 Grave</label>
+                <div class="bar-bg"><div class="bar-fill grave" style="width:${Math.round(sevCounts.grave/total*100)}%"></div></div>
+                <span class="bar-cnt">${sevCounts.grave}</span>
+              </div>
+              <div class="bar-row">
+                <label>🟡 Média</label>
+                <div class="bar-bg"><div class="bar-fill media" style="width:${Math.round(sevCounts.media/total*100)}%"></div></div>
+                <span class="bar-cnt">${sevCounts.media}</span>
+              </div>
+              <div class="bar-row">
+                <label>🟢 Mínima</label>
+                <div class="bar-bg"><div class="bar-fill minima" style="width:${Math.round(sevCounts.minima/total*100)}%"></div></div>
+                <span class="bar-cnt">${sevCounts.minima}</span>
+              </div>
+              ${topAnomalies.length ? `
+                <span class="qtags-label" style="margin-top:14px;margin-bottom:6px;">Tipos de ocorrências</span>
+                <div class="anomaly-cloud">
+                  ${topAnomalies.map(([tag,cnt])=>`<span class="atag">${cap(tag)} <b>${cnt}</b></span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <div>
+              <span class="qtags-label" style="margin-bottom:10px;">Ocorrências por ambiente</span>
+              <div class="room-list">
+                ${roomEntries.length ? roomEntries.map(([room,cnt])=>`
+                  <div class="room-row"><span>${room}</span><b>${cnt}</b></div>
+                `).join('') : '<p style="color:var(--graphite);font-size:12px;">Nenhuma marcação ainda.</p>'}
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
       ${unmarked > 0 ? `<div class="warn-box stage-enter-child">${unmarked} fotos ainda sem legenda. Volte à etapa de marcação para concluí-las antes de exportar o laudo final.</div>` : ''}
       <div class="report-toolbar stage-enter-child">
         <div class="export-buttons">
@@ -1453,9 +2057,10 @@ function renderReport(main){
 
   ['exp-docx','exp-pdf','exp-zip'].forEach(id=>{
     const el = document.getElementById(id);
-    if(el) el.addEventListener('click', ()=> toast('Gerando arquivo... (simulação de demonstração — sem exportação real)'));
+    if(el) el.addEventListener('click', ()=>toast('Gerando arquivo... (demonstração — sem exportação real)'));
   });
 }
+
 
 /* =========================================================
    INIT
