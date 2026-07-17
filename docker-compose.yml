@@ -1,12 +1,8 @@
 services:
   web:
-    image: python:3.12-alpine
-    working_dir: /app
-    command: python3 -m http.server 3000
+    build: .
     expose:
       - "3000"
-    volumes:
-      - ./traco-demo.html:/app/index.html:ro
     labels:
       - traefik.enable=true
       # HTTPS router (principal)
