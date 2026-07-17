@@ -723,11 +723,12 @@
     border-radius: 3px; padding: 18px 24px; margin-bottom: 16px;
     display: flex; justify-content: space-between; align-items: center;
     position: relative; overflow-x: auto; gap: 14px;
-    transition: var(--transition-theme);
+    flex-wrap: nowrap; transition: var(--transition-theme);
+    -webkit-overflow-scrolling: touch;
   }
   .wizard-step {
     display: flex; flex-direction: row; align-items: center; justify-content: center;
-    gap: 8px; flex: 1; position: relative; cursor: pointer; z-index: 2; background: var(--surface);
+    gap: 8px; flex: 0 0 auto; position: relative; cursor: pointer; z-index: 2; background: var(--surface);
     border: none; padding: 0 10px; color: var(--graphite); font-family: 'IBM Plex Sans', sans-serif;
     outline: none; transition: var(--transition-theme);
   }
