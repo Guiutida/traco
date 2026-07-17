@@ -11,9 +11,17 @@ services:
       - coolify
     labels:
       - traefik.enable=true
+      # HTTPS router (principal)
       - traefik.http.routers.traco-jr.rule=Host(`jr-engenharia-poc.tecmash.com.br`)
-      - traefik.http.routers.traco-jr.entrypoints=http
+      - traefik.http.routers.traco-jr.entrypoints=https
+      - traefik.http.routers.traco-jr.tls=true
+      - traefik.http.routers.traco-jr.tls.certresolver=letsencrypt
       - traefik.http.services.traco-jr.loadbalancer.server.port=3000
+      # HTTP → HTTPS redirect
+      - traefik.http.routers.traco-jr-http.rule=Host(`jr-engenharia-poc.tecmash.com.br`)
+      - traefik.http.routers.traco-jr-http.entrypoints=http
+      - traefik.http.routers.traco-jr-http.middlewares=traco-jr-https
+      - traefik.http.middlewares.traco-jr-https.redirectscheme.scheme=https
     restart: unless-stopped
 
 networks:
