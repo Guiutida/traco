@@ -726,17 +726,17 @@
     transition: var(--transition-theme);
   }
   .wizard-step {
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-    flex: 1; position: relative; cursor: pointer; z-index: 2; background: none;
-    border: none; padding: 0; color: var(--graphite); font-family: 'IBM Plex Sans', sans-serif;
-    outline: none;
+    display: flex; flex-direction: row; align-items: center; justify-content: center;
+    gap: 8px; flex: 1; position: relative; cursor: pointer; z-index: 2; background: var(--surface);
+    border: none; padding: 0 10px; color: var(--graphite); font-family: 'IBM Plex Sans', sans-serif;
+    outline: none; transition: var(--transition-theme);
   }
   .wizard-step:disabled { cursor: not-allowed; opacity: 0.4; }
   .wizard-step .circle {
     width: 26px; height: 26px; border-radius: 50%;
     border: 1.5px solid var(--line-strong); background: var(--paper-2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600; margin-bottom: 6px;
+    font-size: 11px; font-weight: 600; flex-shrink: 0;
     transition: all 0.2s ease; color: var(--graphite);
   }
   .wizard-step.active .circle {
@@ -751,8 +751,8 @@
   .wizard-step.active .label { color: var(--ink); font-weight: 600; }
   
   .wizard-line {
-    position: absolute; top: 31px; left: 60px; right: 60px;
-    height: 2px; background: var(--line-strong); z-index: 1;
+    position: absolute; top: 50%; left: 40px; right: 40px;
+    height: 2px; background: var(--line-strong); z-index: 1; transform: translateY(-50%);
   }
   .wizard-line-fill { height: 100%; background: var(--gold,#C4962A); width: 0%; transition: width 0.3s ease; }
 
