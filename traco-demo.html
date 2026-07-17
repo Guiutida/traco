@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traço — Demonstração da solução</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  :root {
+    --ink:#1C2321;
+    --paper:#EDEAE1;
+    --paper-2:#E3DFD3;
+    --paper-3:#DAD5C6;
+    --blueprint:#2F5F76;
+    --blueprint-soft:#DCE7EA;
+    --redline:#B23A2E;
+    --redline-soft:#F3E1DD;
+    --graphite:#6B6F6D;
+    --line: rgba(28,35,33,0.12);
+    --line-strong: rgba(28,35,33,0.24);
+    --surface:#fff;
+    --sidebar-bg:#1C2321;
+    --sidebar-text:#EDEAE1;
+    --topbar-bg:rgba(237,234,225,0.92);
+    --shadow: 0 4px 24px -8px rgba(28,35,33,0.18);
+    --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  [data-theme="dark"] {
+    --ink:#F0EEE5;
+    --paper:#16191A;
+    --paper-2:#1E2326;
+    --paper-3:#242A2C;
+    --blueprint:#5BA3BF;
+    --blueprint-soft:#1A2D35;
+    --redline:#D9584B;
+    --redline-soft:#2D1714;
+    --graphite:#8A9490;
+    --line: rgba(240,238,229,0.1);
+    --line-strong: rgba(240,238,229,0.18);
+    --surface:#1E2326;
+    --sidebar-bg:#0F1214;
+    --sidebar-text:#EDEAE1;
+    --topbar-bg:rgba(22,25,26,0.92);
+    --shadow: 0 4px 24px -8px rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    transition: var(--transition-theme);
+  }
+  h1,h2,h3,.display{ font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  button{font-family:inherit;}
+  img,svg{display:block;max-width:100%;}
+
+  /* ============ FADE-IN ANIMATION ============ */
+  @keyframes fadeInUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to   { opacity:1; }
+  }
+  .stage-enter {
+    animation: fadeInUp 0.35s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .stage-enter-child {
+    animation: fadeInUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .stage-enter-child:nth-child(1) { animation-delay: 0.04s; }
+  .stage-enter-child:nth-child(2) { animation-delay: 0.09s; }
+  .stage-enter-child:nth-child(3) { animation-delay: 0.14s; }
+  .stage-enter-child:nth-child(4) { animation-delay: 0.19s; }
+
+  /* ============ SHELL ============ */
+  .shell{ display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+  @media (max-width:860px){ .shell{grid-template-columns:1fr;} }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{
+    background:var(--sidebar-bg);
+    color:var(--sidebar-text);
+    padding:24px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    transition: background-color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    z-index:50;
+  }
+  /* Mobile: sidebar becomes slide-over drawer */
+  @media (max-width:860px){
+    .sidebar{
+      position:fixed;
+      left:0; top:0; bottom:0;
+      width:260px;
+      transform:translateX(-100%);
+      box-shadow:4px 0 32px rgba(0,0,0,0.35);
+    }
+    .sidebar.open{ transform:translateX(0); }
+    .sidebar-overlay{
+      display:none;
+      position:fixed;inset:0;
+      background:rgba(0,0,0,0.45);
+      z-index:40;
+    }
+    .sidebar-overlay.show{ display:block; }
+  }
+
+  .logo{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:19px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .logo .mark{ width:9px;height:9px;border-radius:50%; background:var(--redline); }
+  .demo-badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:#9FB8C4;
+    border:1px solid rgba(237,234,225,0.2);
+    padding:4px 8px;
+    border-radius:2px;
+    display:inline-block;
+    letter-spacing:0.04em;
+  }
+  .stage-nav{ display:flex; flex-direction:column; gap:2px; }
+  .stage-btn{
+    text-align:left;
+    background:none;
+    border:none;
+    color:#9AA39F;
+    padding:11px 10px;
+    border-radius:2px;
+    font-size:13.5px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:all .15s ease;
+  }
+  .stage-btn .n{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:#6E7773;
+    width:16px;
+    transition: color .15s ease;
+  }
+  .stage-btn:hover{ background:rgba(237,234,225,0.06); color:#DCD8CC; }
+  .stage-btn.active{ background:rgba(237,234,225,0.09); color:#F7F5EF; }
+  .stage-btn.active .n{ color:var(--redline); }
+  .stage-btn:disabled{ opacity:0.35; cursor:not-allowed; }
+
+  .side-stats{
+    margin-top:auto;
+    border-top:1px solid rgba(237,234,225,0.14);
+    padding-top:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .side-stat{ display:flex; justify-content:space-between; font-size:12px; color:#9AA39F; }
+  .side-stat b{ font-family:'IBM Plex Mono', monospace; color:#F0EEE5; font-weight:500; }
+
+  /* ============ TOPBAR ============ */
+  .topbar{
+    height:56px;
+    border-bottom:1px solid var(--line-strong);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px 0 24px;
+    background:var(--topbar-bg);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    position:sticky; top:0; z-index:10;
+    transition: var(--transition-theme);
+  }
+  .topbar-left{ display:flex; align-items:center; gap:12px; }
+  .topbar .proj{ font-size:13.5px; color:var(--graphite); }
+  .topbar .proj b{ color:var(--ink); }
+
+  /* Mobile hamburger */
+  .hamburger{
+    display:none;
+    background:none;
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    padding:7px 10px;
+    cursor:pointer;
+    color:var(--ink);
+    font-size:16px;
+    line-height:1;
+  }
+  @media (max-width:860px){ .hamburger{ display:flex; align-items:center; } }
+
+  /* ============ THEME TOGGLE ============ */
+  .theme-toggle{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    padding:7px 12px;
+    cursor:pointer;
+    font-size:12px;
+    color:var(--graphite);
+    transition:all .15s ease;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .theme-toggle:hover{ border-color:var(--ink); color:var(--ink); }
+  .theme-toggle .icon{ font-size:13px; }
+
+  /* ============ TOAST ============ */
+  .toast{
+    position:fixed; top:20px; right:20px; z-index:200;
+    background:var(--sidebar-bg); color:var(--sidebar-text);
+    padding:14px 18px; border-radius:2px; font-size:13.5px;
+    border-left:3px solid var(--redline);
+    transform:translateX(140%); transition:transform .35s cubic-bezier(0.22,1,0.36,1);
+    max-width:320px;
+    box-shadow: var(--shadow);
+  }
+  .toast.show{ transform:translateX(0); }
+
+  main{ padding:36px 28px 60px; max-width:1180px; }
+
+  /* ============ GENERIC BITS ============ */
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px; border-radius:2px; font-size:13.5px; font-weight:500;
+    cursor:pointer; border:1px solid transparent; transition:all .15s ease; background:none;
+  }
+  .btn-primary{ background:var(--ink); color:var(--paper); }
+  .btn-primary:hover{ background:var(--redline); }
+  .btn-primary:disabled{ background:var(--graphite); opacity:0.5; cursor:not-allowed; }
+  .btn-ghost{ border-color:var(--line-strong); color:var(--ink); }
+  .btn-ghost:hover{ border-color:var(--ink); }
+  .btn-sm{ padding:6px 12px; font-size:12.5px; }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    transition: var(--transition-theme);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--graphite); margin-bottom:10px; display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{ content:""; width:16px; height:1px; background:var(--redline); }
+
+  .stage-head{ margin-bottom:24px; }
+  .stage-head h2{ font-size:22px; }
+  .stage-head p{ color:var(--graphite); font-size:14px; margin-top:6px; max-width:560px; }
+
+  /* ============ STAGE: UPLOAD ============ */
+  .drop-zone{
+    border:1.5px dashed var(--line-strong);
+    border-radius:3px;
+    padding:64px 24px;
+    text-align:center;
+    background:var(--paper-2);
+    transition:all .2s ease;
+  }
+  .drop-zone.active{ border-color:var(--blueprint); background:var(--blueprint-soft); }
+  .drop-zone h3{ font-size:19px; margin-bottom:8px; }
+  .drop-zone p{ color:var(--graphite); font-size:14px; margin:0 0 20px; }
+  .file-types{ display:flex; gap:8px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+  .file-types span{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--graphite);
+    border:1px solid var(--line-strong); padding:4px 9px; border-radius:2px;
+  }
+  .upload-summary{
+    margin-top:20px; padding:16px 20px; background:var(--paper-3); border-radius:2px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    transition: var(--transition-theme);
+  }
+
+  /* ============ STAGE: PROCESSING (enhanced) ============ */
+  .progress-track{ height:6px; background:var(--paper-3); border-radius:3px; overflow:hidden; margin:20px 0; }
+  .progress-fill{ height:100%; background:var(--redline); width:0%; transition:width .5s cubic-bezier(0.22,1,0.36,1); }
+  .log-list{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--graphite); display:flex; flex-direction:column; gap:7px; }
+  .log-list .done{ color:var(--ink); }
+  .log-list .done::before{ content:"✓  "; color:var(--blueprint); }
+  .log-list .active-step{ color:var(--ink); }
+  .log-list .active-step::before{ content:""; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--redline); margin-right:8px; animation:pulse 1s ease-in-out infinite; vertical-align:middle; }
+  .log-list .pending::before{ content:"·  "; }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.7); }
+  }
+
+  /* Photo scanning grid */
+  .scan-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(72px,1fr));
+    gap:6px;
+    margin-top:20px;
+  }
+  .scan-cell{
+    aspect-ratio:4/3;
+    border-radius:2px;
+    overflow:hidden;
+    position:relative;
+    border:1px solid var(--line-strong);
+    background:var(--paper-3);
+    transition: all 0.3s ease;
+  }
+  .scan-cell img{ width:100%; height:100%; object-fit:cover; opacity:0.6; transition:opacity 0.3s; }
+  .scan-cell.scanning{ border-color:var(--blueprint); box-shadow:0 0 0 2px var(--blueprint-soft); }
+  .scan-cell.scanning img{ opacity:0.9; }
+  .scan-cell.scanning::after{
+    content:'';
+    position:absolute; left:0; top:0; right:0; bottom:0;
+    background:linear-gradient(180deg, transparent 0%, rgba(47,95,118,0.4) 50%, transparent 100%);
+    animation:scanLine 1.1s ease-in-out infinite;
+  }
+  .scan-cell.done{ border-color:var(--redline); }
+  .scan-cell.done img{ opacity:1; }
+  .scan-cell.done::after{
+    content:'✓';
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:var(--redline);
+    background:rgba(var(--surface-rgb,255,255,255),0.7);
+    animation: fadeIn 0.3s ease;
+  }
+  [data-theme="dark"] .scan-cell.done::after{
+    background:rgba(30,35,38,0.75);
+  }
+
+  @keyframes scanLine{
+    0%   { transform:translateY(-100%); }
+    100% { transform:translateY(200%); }
+  }
+
+  .processing-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--graphite);
+    text-align:center;
+    margin-top:14px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+
+  /* ============ STAGE: CHECKPOINT ============ */
+  .ckpt-legend{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:18px; font-size:12px; color:var(--graphite); }
+  .ckpt-legend span{ display:flex; align-items:center; gap:6px; }
+  .ckpt-swatch{ width:12px; height:12px; border-radius:2px; display:inline-block; }
+  .ckpt-strip{ display:flex; flex-wrap:wrap; align-items:center; gap:0; padding:20px; background:var(--surface); border:1px solid var(--line-strong); border-radius:2px; }
+  .ckpt-thumb{ width:64px; height:48px; border-radius:2px; overflow:hidden; border:1px solid var(--line-strong); flex:0 0 auto; }
+  .ckpt-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .ckpt-divider{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; width:26px; align-self:stretch; cursor:pointer; position:relative; }
+  .ckpt-divider .line{ width:0; border-left:1.5px dashed var(--line-strong); flex:1; }
+  .ckpt-divider.suggested .line{ border-left-color:var(--blueprint); }
+  .ckpt-divider.confirmed .line{ border-left:2px solid var(--redline); }
+  .ckpt-btn{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:20px; height:20px; border-radius:50%; border:1px solid var(--line-strong); background:var(--surface);
+    font-size:12px; line-height:1; display:flex; align-items:center; justify-content:center; color:var(--graphite);
+    cursor:pointer; transition:all .15s ease;
+  }
+  .ckpt-divider.suggested .ckpt-btn{ border-color:var(--blueprint); color:var(--blueprint); }
+  .ckpt-divider.confirmed .ckpt-btn{ background:var(--redline); border-color:var(--redline); color:#fff; }
+  .ckpt-tooltip{
+    position:absolute; bottom:100%; left:50%; transform:translateX(-50%); margin-bottom:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:10px; white-space:nowrap; padding:3px 7px; border-radius:2px;
+    background:var(--sidebar-bg); color:var(--sidebar-text); opacity:0; pointer-events:none; transition:opacity .12s ease;
+    z-index:20;
+  }
+  .ckpt-divider:hover .ckpt-tooltip{ opacity:1; }
+  .ckpt-status{ display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:12px; }
+  .ckpt-status .mono{ font-size:13px; }
+  .ckpt-warn{ font-size:12.5px; color:var(--redline); background:var(--redline-soft); padding:10px 14px; border-radius:2px; margin-top:14px; }
+
+  /* ============ STAGE: ORGANIZE ============ */
+  .org-layout{ display:grid; grid-template-columns:220px 1fr; gap:24px; align-items:start; }
+  @media (max-width:760px){ .org-layout{grid-template-columns:1fr;} }
+  .tree{ font-size:13.5px; }
+  .tree .node{ padding:7px 10px; border-radius:2px; cursor:pointer; color:var(--graphite); transition:all .12s ease; }
+  .tree .node:hover{ background:var(--paper-2); }
+  .tree .node.active{ background:var(--paper-2); color:var(--ink); font-weight:500; }
+  .tree .apt{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink); margin:12px 0 4px; }
+  .tree .room{ padding-left:16px; }
+
+  .room-section{ margin-bottom:30px; }
+  .room-section-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:8px 12px; background:var(--paper-3); border-radius:2px; margin-bottom:12px;
+    transition: var(--transition-theme);
+  }
+  .room-section-head h4{ font-size:14px; font-family:'Space Grotesk',sans-serif; }
+  .room-section-head .count{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--graphite); }
+  .room-section.dragover{ outline:2px dashed var(--blueprint); outline-offset:4px; }
+
+  .thumb-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:12px; }
+  .thumb{
+    border:1px solid var(--line-strong); border-radius:2px; overflow:hidden; background:var(--surface); cursor:grab;
+    transition:box-shadow .15s ease, opacity .15s ease, transform .15s ease;
+  }
+  .thumb:hover{ box-shadow: var(--shadow); transform:translateY(-2px); }
+  .thumb.excluded{ opacity:0.35; }
+  .thumb .frame{ aspect-ratio:4/3; position:relative; }
+  .thumb .frame img{ width:100%; height:100%; object-fit:cover; }
+  .thumb .badge{
+    position:absolute; top:6px; left:6px; font-family:'IBM Plex Mono', monospace; font-size:9.5px;
+    background:rgba(28,35,33,0.8); color:#F0EEE5; padding:2px 6px; border-radius:2px; letter-spacing:0.03em;
+  }
+  .thumb .badge.dup{ background:var(--redline); }
+  .thumb .badge.marked{ background:var(--blueprint); }
+  .thumb .meta{ padding:8px 9px; font-size:11.5px; }
+  .thumb .meta .id{ font-family:'IBM Plex Mono', monospace; color:var(--graphite); font-size:10px; display:block; margin-bottom:4px;}
+  .thumb .actions{ display:flex; gap:6px; padding:0 9px 9px; }
+  .thumb select{ font-size:10.5px; border:1px solid var(--line-strong); border-radius:2px; padding:3px 4px; flex:1; font-family:'IBM Plex Sans',sans-serif; background:var(--surface); color:var(--ink); }
+  .thumb .x-btn{ border:1px solid var(--line-strong); background:none; border-radius:2px; font-size:10.5px; padding:3px 7px; cursor:pointer; color:var(--graphite); transition:all .12s ease; }
+  .thumb .x-btn:hover{ border-color:var(--redline); color:var(--redline); }
+  .hint-bar{
+    font-size:12.5px; color:var(--graphite); background:var(--blueprint-soft); padding:10px 14px; border-radius:2px; margin-bottom:20px;
+    transition: var(--transition-theme);
+  }
+
+  /* ============ STAGE: MARKUP ============ */
+  .mk-layout{ display:grid; grid-template-columns:200px 1fr 260px; gap:20px; align-items:start; }
+  @media (max-width:1000px){ .mk-layout{grid-template-columns:1fr;} }
+  .mk-list{ display:flex; flex-direction:column; gap:6px; max-height:640px; overflow:auto; }
+  .mk-list-item{
+    display:flex; gap:8px; align-items:center; padding:6px; border-radius:2px; cursor:pointer; border:1px solid transparent;
+    transition:all .12s ease;
+  }
+  .mk-list-item img{ width:38px; height:30px; object-fit:cover; border-radius:2px; }
+  .mk-list-item span{ font-size:11.5px; }
+  .mk-list-item.active{ border-color:var(--blueprint); background:var(--blueprint-soft); }
+  .mk-list-item .ok{ margin-left:auto; color:var(--blueprint); font-size:12px; }
+
+  .toolbar{ display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+  .tool-btn{
+    border:1px solid var(--line-strong); background:var(--surface); padding:8px 12px; border-radius:2px; cursor:pointer; font-size:12.5px;
+    display:flex; align-items:center; gap:6px; color:var(--ink); transition:all .12s ease;
+  }
+  .tool-btn.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .canvas-wrap{ position:relative; width:100%; max-width:560px; border:1px solid var(--line-strong); border-radius:2px; overflow:hidden; background:var(--surface); }
+  .canvas-wrap canvas{ display:block; width:100%; height:auto; cursor:crosshair; }
+
+  .caption-panel .field{ margin-bottom:14px; }
+  .caption-panel label{ display:block; font-size:11.5px; font-family:'IBM Plex Mono', monospace; text-transform:uppercase; letter-spacing:0.05em; color:var(--graphite); margin-bottom:6px; }
+  .caption-panel input{ width:100%; padding:9px 10px; border:1px solid var(--line-strong); border-radius:2px; font-size:13.5px; font-family:'IBM Plex Sans',sans-serif; background:var(--surface); color:var(--ink); transition: var(--transition-theme); }
+  .caption-panel input:focus{ outline:none; border-color:var(--blueprint); }
+  .caption-out{
+    margin-top:16px; padding:14px; background:var(--paper-2); border-left:2px solid var(--blueprint); font-size:13px; min-height:40px;
+    transition: var(--transition-theme);
+  }
+  .caption-out .lbl{ display:block; font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--blueprint); text-transform:uppercase; margin-bottom:6px; letter-spacing:0.06em; }
+  .principle-note{ font-size:11.5px; color:var(--graphite); margin-top:10px; line-height:1.5; }
+
+  /* ============ STAGE: REPORT ============ */
+  .report-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+  .export-buttons{ display:flex; gap:8px; flex-wrap:wrap; }
+  .apt-block{ margin-bottom:32px; }
+  .apt-block-head{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--graphite); border-bottom:1px solid var(--line-strong); padding-bottom:10px; margin-bottom:16px; }
+  .room-report-title{ font-size:14px; margin:18px 0 10px; }
+  .report-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:18px; }
+  .report-card{ border:1px solid var(--line-strong); border-radius:2px; overflow:hidden; background:var(--surface); }
+  .report-card .frame img{ width:100%; aspect-ratio:4/3; object-fit:cover; }
+  .report-card .cap{ padding:10px 12px; font-size:12.5px; }
+  .warn-box{ font-size:12.5px; color:var(--redline); background:var(--redline-soft); padding:10px 14px; border-radius:2px; margin-bottom:20px; }
+
+  .stat-strip{ display:flex; gap:28px; margin-bottom:24px; flex-wrap:wrap; }
+  .stat-strip .s {}
+  .stat-strip .s .v{ font-family:'IBM Plex Mono', monospace; font-size:26px; color:var(--ink); }
+  .stat-strip .s .l{ font-size:11.5px; color:var(--graphite); }
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <div class="logo"><span class="mark"></span>TRAÇO</div>
+      <div style="margin-top:10px;"><span class="demo-badge">DEMONSTRAÇÃO · DADOS SIMULADOS</span></div>
+    </div>
+    <nav class="stage-nav" id="stage-nav">
+      <button class="stage-btn" data-stage="upload"><span class="n">01</span>Upload</button>
+      <button class="stage-btn" data-stage="processing" disabled><span class="n">02</span>Processamento</button>
+      <button class="stage-btn" data-stage="checkpoint" disabled><span class="n">03</span>Identificação de unidades</button>
+      <button class="stage-btn" data-stage="organize" disabled><span class="n">04</span>Organização &amp; revisão</button>
+      <button class="stage-btn" data-stage="markup" disabled><span class="n">05</span>Marcação manual</button>
+      <button class="stage-btn" data-stage="report" disabled><span class="n">06</span>Relatório &amp; exportação</button>
+    </nav>
+    <div class="side-stats">
+      <div class="side-stat"><span>Fotos carregadas</span><b id="s-total">0</b></div>
+      <div class="side-stat"><span>Ambientes</span><b id="s-rooms">0</b></div>
+      <div class="side-stat"><span>Legendadas</span><b id="s-marked">0/0</b></div>
+      <div class="side-stat"><span>Excluídas</span><b id="s-excluded">0</b></div>
+    </div>
+  </aside>
+
+  <div>
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+        <div class="proj">Vistoria em andamento — <b>Edifício Aurora</b></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="proj mono" id="topbar-stage" style="font-size:11.5px; letter-spacing:0.05em; text-transform:uppercase;">ETAPA 01 · UPLOAD</div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Alternar tema">
+          <span class="icon" id="theme-icon">☀</span>
+          <span id="theme-label">Claro</span>
+        </button>
+      </div>
+    </div>
+    <main id="main"></main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATA MODEL
+   ========================================================= */
+const ROOM_META = {
+  sala:      { label:'Sala',      prep:'sala' },
+  cozinha:   { label:'Cozinha',   prep:'cozinha' },
+  banheiro:  { label:'Banheiro',  prep:'banheiro' },
+  quarto:    { label:'Quarto',    prep:'quarto' },
+  sacada:    { label:'Sacada',    prep:'sacada' },
+  fachada:   { label:'Fachada',   prep:'fachada' },
+  garagem:   { label:'Garagem',   prep:'garagem' },
+};
+const PHOTO_TYPES = ['Foto geral','Foto de parede','Foto de piso','Foto de teto','Foto de detalhe'];
+
+const APARTMENTS = [
+  { id:'101', rooms:['sala','cozinha','banheiro','quarto'] },
+  { id:'102', rooms:['sala','cozinha','banheiro'] },
+  { id:'203', rooms:['quarto','banheiro','sacada'] },
+  { id:'ÁREAS COMUNS', rooms:['fachada','garagem'], common:true },
+];
+
+/* Technical illustration SVGs per room */
+function roomSVG(type){
+  const paper='%23EDEAE1', paper2='%23E3DFD3', paper3='%23DAD5C6', line='%236B6F6D', ink='%231C2321', blue='%232F5F76';
+  const wrap = (inner) => `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 360'>${inner}</svg>`;
+  switch(type){
+    case 'sala':
+      return wrap(`<rect width='480' height='360' fill='${paper}'/><rect x='0' y='230' width='480' height='130' fill='${paper3}'/><rect x='300' y='40' width='140' height='140' fill='${paper2}' stroke='${line}'/><line x1='370' y1='40' x2='370' y2='180' stroke='${line}'/><line x1='300' y1='110' x2='440' y2='110' stroke='${line}'/><rect x='60' y='210' width='170' height='70' rx='8' fill='${paper3}' stroke='${ink}' stroke-width='2'/><rect x='70' y='190' width='40' height='30' rx='6' fill='${paper2}' stroke='${ink}'/><rect x='120' y='190' width='40' height='30' rx='6' fill='${paper2}' stroke='${ink}'/>`);
+    case 'cozinha':
+      return wrap(`<rect width='480' height='360' fill='${paper}'/><rect x='0' y='240' width='480' height='120' fill='${paper3}'/><rect x='20' y='150' width='440' height='90' fill='${paper2}' stroke='${ink}' stroke-width='2'/><line x1='130' y1='150' x2='130' y2='240' stroke='${line}'/><line x1='240' y1='150' x2='240' y2='240' stroke='${line}'/><line x1='350' y1='150' x2='350' y2='240' stroke='${line}'/><rect x='20' y='50' width='150' height='70' fill='${paper2}' stroke='${line}'/><rect x='190' y='50' width='150' height='70' fill='${paper2}' stroke='${line}'/>`);
+    case 'banheiro':
+      let tiles='';
+      for(let x=0;x<480;x+=40) for(let y=0;y<260;y+=40) tiles+=`<rect x='${x}' y='${y}' width='40' height='40' fill='none' stroke='${line}' stroke-width='0.6'/>`;
+      return wrap(`<rect width='480' height='360' fill='${paper2}'/>${tiles}<rect x='0' y='260' width='480' height='100' fill='${paper3}'/><ellipse cx='120' cy='300' rx='55' ry='24' fill='${paper}' stroke='${ink}' stroke-width='2'/><rect x='300' y='240' width='90' height='60' rx='6' fill='${paper}' stroke='${ink}' stroke-width='2'/>`);
+    case 'quarto':
+      return wrap(`<rect width='480' height='360' fill='${paper}'/><rect x='0' y='250' width='480' height='110' fill='${paper3}'/><rect x='340' y='40' width='110' height='120' fill='${paper2}' stroke='${line}'/><rect x='40' y='190' width='220' height='90' rx='6' fill='${paper3}' stroke='${ink}' stroke-width='2'/><rect x='40' y='170' width='60' height='30' rx='8' fill='${paper}' stroke='${ink}'/><rect x='110' y='170' width='60' height='30' rx='8' fill='${paper}' stroke='${ink}'/>`);
+    case 'sacada':
+      return wrap(`<rect width='480' height='200' fill='${paper2}'/><rect x='0' y='200' width='480' height='160' fill='${paper3}'/><line x1='40' y1='140' x2='40' y2='230' stroke='${ink}' stroke-width='3'/><line x1='120' y1='140' x2='120' y2='230' stroke='${ink}' stroke-width='3'/><line x1='200' y1='140' x2='200' y2='230' stroke='${ink}' stroke-width='3'/><line x1='280' y1='140' x2='280' y2='230' stroke='${ink}' stroke-width='3'/><line x1='360' y1='140' x2='360' y2='230' stroke='${ink}' stroke-width='3'/><line x1='440' y1='140' x2='440' y2='230' stroke='${ink}' stroke-width='3'/><line x1='20' y1='140' x2='460' y2='140' stroke='${ink}' stroke-width='3'/>`);
+    case 'fachada':
+      let win='';
+      for(let x=40;x<440;x+=70) for(let y=40;y<280;y+=70) win+=`<rect x='${x}' y='${y}' width='40' height='45' fill='${blue}' opacity='0.25' stroke='${ink}'/>`;
+      return wrap(`<rect width='480' height='360' fill='${paper}'/><rect x='0' y='300' width='480' height='60' fill='${paper3}'/>${win}`);
+    case 'garagem':
+      return wrap(`<rect width='480' height='360' fill='${paper3}'/><rect x='0' y='0' width='480' height='40' fill='${paper2}'/><rect x='120' y='150' width='240' height='90' rx='16' fill='${paper}' stroke='${ink}' stroke-width='2'/><circle cx='160' cy='245' r='18' fill='${ink}'/><circle cx='320' cy='245' r='18' fill='${ink}'/>`);
+    default:
+      return wrap(`<rect width='480' height='360' fill='${paper}'/>`);
+  }
+}
+
+let PHOTOS = [];
+function buildPhotos(){
+  PHOTOS = [];
+  let seq = 800;
+  APARTMENTS.forEach(apt=>{
+    apt.rooms.forEach(room=>{
+      const n = 3 + Math.floor(Math.random()*3);
+      for(let i=0;i<n;i++){
+        seq++;
+        PHOTOS.push({
+          id: `${apt.id}-${room}-${i}`,
+          apt: apt.id,
+          room: room,
+          type: PHOTO_TYPES[i % PHOTO_TYPES.length],
+          img: roomSVG(room),
+          filename: `IMG_${seq}.HEIC`,
+          duplicate: Math.random() < 0.12,
+          excluded: false,
+          marked: false,
+          caption: null,
+          annotations: [],
+        });
+      }
+    });
+  });
+}
+
+let STATE = {
+  stage: 'upload',
+  uploaded: false,
+  fileCount: 0,
+  filterApt: 'all',
+  currentMarkupId: null,
+  currentTool: 'circle',
+  confirmedCheckpoints: new Set(),
+};
+
+/* =========================================================
+   THEME TOGGLE
+   ========================================================= */
+function initTheme(){
+  const saved = localStorage.getItem('traco-theme') || 'light';
+  applyTheme(saved);
+}
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('traco-theme', theme);
+  const icon = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-label');
+  if(icon) icon.textContent = theme === 'dark' ? '☽' : '☀';
+  if(label) label.textContent = theme === 'dark' ? 'Escuro' : 'Claro';
+}
+
+document.getElementById('theme-toggle').addEventListener('click', ()=>{
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+/* =========================================================
+   MOBILE SIDEBAR
+   ========================================================= */
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+
+hamburger.addEventListener('click', ()=>{
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', ()=>{
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+});
+
+function closeSidebar(){
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+
+function updateSideStats(){
+  const active = PHOTOS.filter(p=>!p.excluded);
+  const rooms = new Set(active.map(p=>p.room));
+  document.getElementById('s-total').textContent = PHOTOS.length ? PHOTOS.length : '0';
+  document.getElementById('s-rooms').textContent = rooms.size;
+  document.getElementById('s-marked').textContent = `${active.filter(p=>p.marked).length}/${active.length}`;
+  document.getElementById('s-excluded').textContent = PHOTOS.filter(p=>p.excluded).length;
+}
+
+function setStageEnabled(stage){
+  const order = ['upload','processing','checkpoint','organize','markup','report'];
+  const idx = order.indexOf(stage);
+  document.querySelectorAll('.stage-btn').forEach(btn=>{
+    const bIdx = order.indexOf(btn.dataset.stage);
+    if(bIdx <= idx) btn.disabled = false;
+  });
+}
+
+function goStage(stage){
+  STATE.stage = stage;
+  document.querySelectorAll('.stage-btn').forEach(b=> b.classList.toggle('active', b.dataset.stage === stage));
+  const labels = {
+    upload:'ETAPA 01 · UPLOAD',
+    processing:'ETAPA 02 · PROCESSAMENTO',
+    checkpoint:'ETAPA 03 · IDENTIFICAÇÃO DE UNIDADES',
+    organize:'ETAPA 04 · ORGANIZAÇÃO & REVISÃO',
+    markup:'ETAPA 05 · MARCAÇÃO MANUAL',
+    report:'ETAPA 06 · RELATÓRIO & EXPORTAÇÃO'
+  };
+  document.getElementById('topbar-stage').textContent = labels[stage];
+  render();
+  updateSideStats();
+  window.scrollTo({top:0, behavior:'smooth'});
+  closeSidebar();
+}
+
+document.getElementById('stage-nav').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.stage-btn');
+  if(btn && !btn.disabled) goStage(btn.dataset.stage);
+});
+
+/* =========================================================
+   RENDER: STAGE ROUTER
+   ========================================================= */
+function render(){
+  const main = document.getElementById('main');
+  if(STATE.stage === 'upload') return renderUpload(main);
+  if(STATE.stage === 'processing') return renderProcessing(main);
+  if(STATE.stage === 'checkpoint') return renderCheckpoint(main);
+  if(STATE.stage === 'organize') return renderOrganize(main);
+  if(STATE.stage === 'markup') return renderMarkup(main);
+  if(STATE.stage === 'report') return renderReport(main);
+}
+
+/* ---------- 01 UPLOAD ---------- */
+function renderUpload(main){
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Envie a pasta da vistoria</h2>
+        <p>Arraste a pasta inteira, sem separar nada antes. Nesta demonstração, simulamos o envio de uma pasta real de vistoria.</p>
+      </div>
+      <div class="drop-zone stage-enter-child" id="drop-zone">
+        <h3>Arraste a pasta aqui</h3>
+        <p>ou clique para simular o envio de uma vistoria real</p>
+        <button class="btn btn-primary" id="btn-simulate">Simular pasta de vistoria (342 fotos)</button>
+        <div class="file-types"><span>.JPG</span><span>.JPEG</span><span>.PNG</span><span>.HEIC</span><span>.ZIP</span></div>
+      </div>
+      <div id="upload-summary-slot" class="stage-enter-child"></div>
+    </div>
+  `;
+  const dz = document.getElementById('drop-zone');
+  ['dragenter','dragover'].forEach(ev=> dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.add('active'); }));
+  ['dragleave','drop'].forEach(ev=> dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.remove('active'); if(ev==='drop') simulateUpload(); }));
+  document.getElementById('btn-simulate').addEventListener('click', simulateUpload);
+  if(STATE.uploaded) showUploadSummary();
+}
+
+function simulateUpload(){
+  STATE.uploaded = true;
+  STATE.fileCount = 342;
+  buildPhotos();
+  updateSideStats();
+  showUploadSummary();
+}
+
+function showUploadSummary(){
+  const slot = document.getElementById('upload-summary-slot');
+  if(!slot) return;
+  slot.innerHTML = `
+    <div class="upload-summary" style="animation:fadeInUp 0.35s cubic-bezier(0.22,1,0.36,1) both;">
+      <div><b class="mono" style="font-size:20px;">342 fotos</b> recebidas · JPG, PNG e HEIC · 1 empreendimento detectado</div>
+      <button class="btn btn-primary" id="btn-start-processing">Iniciar processamento</button>
+    </div>
+  `;
+  document.getElementById('btn-start-processing').addEventListener('click', ()=>{
+    setStageEnabled('processing');
+    goStage('processing');
+    runProcessing();
+  });
+}
+
+/* ---------- 02 PROCESSING (enhanced with scan grid) ---------- */
+function renderProcessing(main){
+  // Build a grid of representative SVG thumbnails
+  const samplePhotos = PHOTOS.slice(0, 24);
+  const scanCells = samplePhotos.map((p,i)=>
+    `<div class="scan-cell" id="scan-cell-${i}">
+       <img src="${p.img}" alt="">
+     </div>`
+  ).join('');
+
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Processando a vistoria</h2>
+        <p>A IA está lendo cada fotografia para identificar apartamento, ambiente e possíveis duplicadas.</p>
+      </div>
+      <div class="panel stage-enter-child" style="padding:28px;">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="log-list" id="log-list">
+          <div class="pending" data-key="exif">Lendo metadados EXIF (data, hora, geolocalização)</div>
+          <div class="pending" data-key="sim">Agrupando por similaridade visual e sequência temporal</div>
+          <div class="pending" data-key="rooms">Identificando apartamentos e ambientes</div>
+          <div class="pending" data-key="dup">Sinalizando possíveis fotos duplicadas ou inutilizáveis</div>
+          <div class="pending" data-key="build">Montando a estrutura do relatório</div>
+        </div>
+        <div class="scan-grid" id="scan-grid">${scanCells}</div>
+        <div class="processing-label" id="processing-label">Aguardando...</div>
+      </div>
+    </div>
+  `;
+}
+
+function runProcessing(){
+  const steps = ['exif','sim','rooms','dup','build'];
+  const stepLabels = {
+    exif:'Lendo metadados EXIF...',
+    sim:'Agrupando por similaridade...',
+    rooms:'Identificando ambientes com IA...',
+    dup:'Detectando duplicadas...',
+    build:'Montando relatório...'
+  };
+  let stepIdx = 0;
+  let cellIdx = 0;
+  const totalCells = document.querySelectorAll('.scan-cell').length;
+  const cellsPerStep = Math.ceil(totalCells / steps.length);
+
+  const iv = setInterval(()=>{
+    if(STATE.stage !== 'processing'){ clearInterval(iv); return; }
+
+    // Mark current step log
+    const el = document.querySelector(`.log-list [data-key="${steps[stepIdx]}"]`);
+    if(el){
+      // un-active previous
+      document.querySelectorAll('.log-list .active-step').forEach(e=>{ e.classList.remove('active-step'); e.classList.add('done'); });
+      el.classList.remove('pending');
+      el.classList.add('active-step');
+    }
+
+    // Update label
+    const lbl = document.getElementById('processing-label');
+    if(lbl) lbl.textContent = stepLabels[steps[stepIdx]];
+
+    // Scan cells for this step
+    const endCell = Math.min(cellIdx + cellsPerStep, totalCells);
+    let delay = 0;
+    for(let c = cellIdx; c < endCell; c++){
+      const cell = document.getElementById(`scan-cell-${c}`);
+      if(!cell) continue;
+      ;(function(el, d){
+        setTimeout(()=>{ el.classList.add('scanning'); }, d * 60);
+        setTimeout(()=>{ el.classList.remove('scanning'); el.classList.add('done'); }, d * 60 + 900);
+      })(cell, c - cellIdx);
+      delay++;
+    }
+    cellIdx = endCell;
+
+    // Progress bar
+    const pct = Math.round(((stepIdx + 1) / steps.length) * 100);
+    const fill = document.getElementById('progress-fill');
+    if(fill) fill.style.width = pct + '%';
+
+    stepIdx++;
+    if(stepIdx >= steps.length){
+      clearInterval(iv);
+      // Complete all logs
+      setTimeout(()=>{
+        document.querySelectorAll('.log-list .active-step').forEach(e=>{ e.classList.remove('active-step'); e.classList.add('done'); });
+        const lbl2 = document.getElementById('processing-label');
+        if(lbl2) lbl2.textContent = 'Processamento concluído ✓';
+      }, 800);
+      setTimeout(()=>{
+        setStageEnabled('checkpoint');
+        goStage('checkpoint');
+        toast('37 fotos representativas agrupadas de 342 recebidas. Confirme as unidades para continuar.');
+      }, 1800);
+    }
+  }, 1100);
+}
+
+/* ---------- 03 CHECKPOINT ---------- */
+function trueUnitBoundaries(){
+  const b = [];
+  for(let i=1;i<PHOTOS.length;i++){
+    if(PHOTOS[i].apt !== PHOTOS[i-1].apt) b.push(i);
+  }
+  return b;
+}
+
+function renderCheckpoint(main){
+  const boundaries = trueUnitBoundaries();
+  const confirmedSuggested = boundaries.filter(i=> STATE.confirmedCheckpoints.has(i)).length;
+
+  let strip = '';
+  PHOTOS.forEach((p, i)=>{
+    strip += `<div class="ckpt-thumb"><img src="${p.img}" alt=""></div>`;
+    if(i < PHOTOS.length - 1){
+      const idx = i + 1;
+      const isSuggested = boundaries.includes(idx);
+      const isConfirmed = STATE.confirmedCheckpoints.has(idx);
+      strip += `
+        <div class="ckpt-divider ${isSuggested?'suggested':''} ${isConfirmed?'confirmed':''}" data-index="${idx}">
+          <div class="line"></div>
+          <button class="ckpt-btn">${isConfirmed ? '✓' : (isSuggested ? '!' : '+')}</button>
+          <div class="ckpt-tooltip">${isConfirmed ? 'Nova unidade confirmada — clique para desfazer' : (isSuggested ? 'IA sugere nova unidade aqui' : 'Marcar nova unidade aqui')}</div>
+        </div>
+      `;
+    }
+  });
+
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Identificação de unidades</h2>
+        <p>A separação por ambiente é automática, mas diferenciar "apartamento 101" de "apartamento 102" depende de um sinal que a foto sozinha não dá — os acabamentos costumam ser idênticos. O Traço sugere onde uma unidade termina e a próxima começa; confirme ou ajuste os pontos abaixo.</p>
+      </div>
+      <div class="ckpt-legend stage-enter-child">
+        <span><span class="ckpt-swatch" style="background:var(--blueprint-soft); border:1px solid var(--blueprint);"></span>Sugestão da IA (mudança brusca de ambiente + salto de horário)</span>
+        <span><span class="ckpt-swatch" style="background:var(--redline);"></span>Unidade confirmada</span>
+        <span><span class="ckpt-swatch" style="background:var(--surface); border:1px solid var(--line-strong);"></span>Marcação manual</span>
+      </div>
+      <div class="ckpt-strip stage-enter-child">${strip}</div>
+      <div class="ckpt-status stage-enter-child">
+        <span class="mono">${confirmedSuggested} de ${boundaries.length} sugestões da IA confirmadas · ${STATE.confirmedCheckpoints.size} checkpoints no total</span>
+        <button class="btn btn-primary" id="btn-confirm-units">Confirmar unidades e organizar</button>
+      </div>
+      ${confirmedSuggested < boundaries.length ? '<div class="ckpt-warn stage-enter-child">Ainda há sugestões da IA não confirmadas. Sem confirmação, fotos de unidades diferentes podem ficar misturadas no mesmo apartamento.</div>' : ''}
+    </div>
+  `;
+
+  document.querySelectorAll('.ckpt-divider').forEach(div=>{
+    div.addEventListener('click', ()=>{
+      const idx = parseInt(div.dataset.index, 10);
+      if(STATE.confirmedCheckpoints.has(idx)) STATE.confirmedCheckpoints.delete(idx);
+      else STATE.confirmedCheckpoints.add(idx);
+      renderCheckpoint(main);
+    });
+  });
+
+  document.getElementById('btn-confirm-units').addEventListener('click', ()=>{
+    if(confirmedSuggested < boundaries.length){
+      toast(`Faltam ${boundaries.length - confirmedSuggested} sugestões para confirmar — prosseguindo mesmo assim.`);
+    } else {
+      toast('Unidades confirmadas. Organizando por apartamento e ambiente.');
+    }
+    setStageEnabled('organize');
+    goStage('organize');
+  });
+}
+
+/* ---------- 04 ORGANIZE ---------- */
+function renderOrganize(main){
+  const apts = APARTMENTS;
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Organização automática</h2>
+        <p>Fotos agrupadas por apartamento e ambiente. Arraste uma foto para outro ambiente, reclassifique pelo seletor, ou marque itens duplicados como excluídos.</p>
+      </div>
+      <div class="hint-bar stage-enter-child">Exibindo 37 fotos representativas — imagens muito semelhantes já foram agrupadas automaticamente.</div>
+      <div class="org-layout stage-enter-child">
+        <div class="tree" id="tree">
+          <div class="node ${STATE.filterApt==='all'?'active':''}" data-apt="all">Todos os apartamentos</div>
+          ${apts.map(a=>`<div class="apt">${a.common ? a.id : 'APTO '+a.id}</div>
+            <div class="node room ${STATE.filterApt===a.id?'active':''}" data-apt="${a.id}">Ver todos</div>
+          `).join('')}
+        </div>
+        <div id="org-main"></div>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('#tree .node').forEach(n=>{
+    n.addEventListener('click', ()=>{ STATE.filterApt = n.dataset.apt; renderOrganize(main); });
+  });
+  renderOrgMain();
+}
+
+function renderOrgMain(){
+  const slot = document.getElementById('org-main');
+  const apts = STATE.filterApt === 'all' ? APARTMENTS : APARTMENTS.filter(a=>a.id===STATE.filterApt);
+  let html = '';
+  apts.forEach(apt=>{
+    apt.rooms.forEach(room=>{
+      const photos = PHOTOS.filter(p=>p.apt===apt.id && p.room===room);
+      if(!photos.length) return;
+      html += `
+        <div class="room-section" data-room="${room}" data-apt="${apt.id}">
+          <div class="room-section-head">
+            <h4>${apt.common ? '' : 'Apto '+apt.id+' — '}${ROOM_META[room].label}</h4>
+            <span class="count mono">${photos.length} fotos</span>
+          </div>
+          <div class="thumb-grid">
+            ${photos.map(p=>thumbHTML(p)).join('')}
+          </div>
+        </div>
+      `;
+    });
+  });
+  slot.innerHTML = html || '<p style="color:var(--graphite);">Nenhuma foto neste filtro.</p>';
+
+  slot.querySelectorAll('.thumb').forEach(t=>{
+    t.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', t.dataset.id));
+  });
+  slot.querySelectorAll('.room-section').forEach(sec=>{
+    sec.addEventListener('dragover', e=>{ e.preventDefault(); sec.classList.add('dragover'); });
+    sec.addEventListener('dragleave', ()=> sec.classList.remove('dragover'));
+    sec.addEventListener('drop', e=>{
+      e.preventDefault();
+      sec.classList.remove('dragover');
+      const id = e.dataTransfer.getData('text/plain');
+      const photo = PHOTOS.find(p=>p.id===id);
+      if(photo){
+        photo.room = sec.dataset.room;
+        photo.apt = sec.dataset.apt;
+        toast(`Foto reclassificada para ${ROOM_META[photo.room].label}.`);
+        renderOrgMain();
+      }
+    });
+  });
+
+  slot.querySelectorAll('select.reclass').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const photo = PHOTOS.find(p=>p.id===sel.dataset.id);
+      photo.room = sel.value;
+      renderOrgMain();
+    });
+  });
+  slot.querySelectorAll('.x-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const photo = PHOTOS.find(p=>p.id===btn.dataset.id);
+      photo.excluded = !photo.excluded;
+      updateSideStats();
+      renderOrgMain();
+    });
+  });
+  slot.querySelectorAll('.thumb .frame').forEach(f=>{
+    f.addEventListener('click', ()=>{
+      const id = f.closest('.thumb').dataset.id;
+      STATE.currentMarkupId = id;
+      setStageEnabled('report');
+      goStage('markup');
+    });
+  });
+}
+
+function thumbHTML(p){
+  const roomOptions = Object.keys(ROOM_META).map(k=>`<option value="${k}" ${k===p.room?'selected':''}>${ROOM_META[k].label}</option>`).join('');
+  return `
+    <div class="thumb ${p.excluded?'excluded':''}" draggable="true" data-id="${p.id}">
+      <div class="frame">
+        <img src="${p.img}" alt="${ROOM_META[p.room].label}">
+        ${p.duplicate ? '<span class="badge dup">POSSÍVEL DUPLICADA</span>' : ''}
+        ${p.marked ? '<span class="badge marked">MARCADA</span>' : ''}
+      </div>
+      <div class="meta">
+        <span class="id">${p.filename} · ${p.type}</span>
+        <div class="actions">
+          <select class="reclass" data-id="${p.id}">${roomOptions}</select>
+          <button class="x-btn" data-id="${p.id}">${p.excluded?'Restaurar':'Excluir'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- 05 MARKUP ---------- */
+let canvasCtx = null, baseImg = null, drawing = false, startX=0, startY=0;
+
+function renderMarkup(main){
+  const eligible = PHOTOS.filter(p=>!p.excluded);
+  if(!STATE.currentMarkupId){
+    STATE.currentMarkupId = (eligible[0] && eligible[0].id) || null;
+  }
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Marcação manual</h2>
+        <p>Selecione uma foto, marque a ocorrência com os instrumentos abaixo e descreva o que foi observado. O Traço só usa o que você marcou para escrever a legenda.</p>
+      </div>
+      <div class="mk-layout">
+        <div class="mk-list" id="mk-list">
+          ${eligible.map(p=>`
+            <div class="mk-list-item ${p.id===STATE.currentMarkupId?'active':''}" data-id="${p.id}">
+              <img src="${p.img}">
+              <span>Apto ${p.apt} · ${ROOM_META[p.room].label}</span>
+              ${p.marked ? '<span class="ok">✓</span>' : ''}
+            </div>
+          `).join('')}
+        </div>
+        <div>
+          <div class="toolbar">
+            <button class="tool-btn" data-tool="arrow">↗ Seta</button>
+            <button class="tool-btn" data-tool="circle">○ Círculo</button>
+            <button class="tool-btn" data-tool="rect">▭ Retângulo</button>
+            <button class="tool-btn" data-tool="text">Aa Texto</button>
+            <button class="btn btn-ghost btn-sm" id="btn-clear" style="margin-left:auto;">Limpar marcações</button>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="mk-canvas" width="560" height="420"></canvas>
+          </div>
+        </div>
+        <div class="caption-panel panel" style="padding:20px;">
+          <div class="eyebrow">Legenda inteligente</div>
+          <div class="field">
+            <label>O que foi observado?</label>
+            <input id="obs-input" type="text" placeholder="ex.: fissura vertical">
+          </div>
+          <div class="field">
+            <label>Localização na foto</label>
+            <input id="loc-input" type="text" placeholder="ex.: parede lateral direita">
+          </div>
+          <button class="btn btn-primary" id="btn-gen-caption" style="width:100%; justify-content:center;">Gerar legenda</button>
+          <div class="caption-out" id="caption-out">
+            <span class="lbl">Legenda</span>
+            <span id="caption-text">Marque a ocorrência na foto e descreva o que foi observado.</span>
+          </div>
+          <p class="principle-note">A IA nunca diagnostica sozinha — a legenda usa apenas a marcação e a descrição informadas pelo engenheiro.</p>
+          <button class="btn btn-ghost btn-sm" id="btn-goto-report" style="width:100%; justify-content:center; margin-top:14px;">Ir para relatório &amp; exportação →</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btn-goto-report').addEventListener('click', ()=>{
+    setStageEnabled('report');
+    goStage('report');
+  });
+
+  document.querySelectorAll('#mk-list .mk-list-item').forEach(item=>{
+    item.addEventListener('click', ()=>{ STATE.currentMarkupId = item.dataset.id; renderMarkup(main); });
+  });
+  document.querySelectorAll('.tool-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.tool === STATE.currentTool);
+    btn.addEventListener('click', ()=>{ STATE.currentTool = btn.dataset.tool; renderMarkup(main); });
+  });
+  document.getElementById('btn-clear').addEventListener('click', ()=>{
+    const p = currentPhoto();
+    if(p){ p.annotations = []; redrawCanvas(); }
+  });
+  document.getElementById('btn-gen-caption').addEventListener('click', generateCaption);
+
+  setupCanvas();
+}
+
+function currentPhoto(){ return PHOTOS.find(p=>p.id===STATE.currentMarkupId); }
+
+function setupCanvas(){
+  const canvas = document.getElementById('mk-canvas');
+  if(!canvas) return;
+  canvasCtx = canvas.getContext('2d');
+  const p = currentPhoto();
+  if(!p) return;
+  baseImg = new Image();
+  baseImg.onload = redrawCanvas;
+  baseImg.src = p.img;
+
+  canvas.onmousedown = (e)=>{
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+    startX = (e.clientX - rect.left) * scaleX;
+    startY = (e.clientY - rect.top) * scaleY;
+    if(STATE.currentTool === 'text'){
+      const txt = prompt('Texto da marcação:');
+      if(txt){ currentPhoto().annotations.push({type:'text', x:startX, y:startY, text:txt}); redrawCanvas(); }
+      return;
+    }
+    drawing = true;
+  };
+  canvas.onmousemove = (e)=>{
+    if(!drawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX, y = (e.clientY - rect.top) * scaleY;
+    redrawCanvas();
+    drawShapePreview(STATE.currentTool, startX, startY, x, y);
+  };
+  const commitShape = (e)=>{
+    if(!drawing) return;
+    drawing = false;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX, y = (e.clientY - rect.top) * scaleY;
+    if(Math.abs(x-startX) > 4 || Math.abs(y-startY) > 4){
+      currentPhoto().annotations.push({type:STATE.currentTool, x1:startX, y1:startY, x2:x, y2:y});
+    }
+    redrawCanvas();
+  };
+  canvas.onmouseup = commitShape;
+  canvas.onmouseleave = (e)=>{ if(drawing) commitShape(e); };
+}
+
+function drawShapePreview(tool, x1,y1,x2,y2){
+  drawShape(canvasCtx, {type:tool, x1,y1,x2,y2});
+}
+
+function drawShape(ctx, s){
+  ctx.strokeStyle = '#B23A2E';
+  ctx.fillStyle = '#B23A2E';
+  ctx.lineWidth = 3;
+  if(s.type === 'circle'){
+    const rx = Math.abs(s.x2-s.x1)/2, ry = Math.abs(s.y2-s.y1)/2;
+    const cx = (s.x1+s.x2)/2, cy=(s.y1+s.y2)/2;
+    ctx.beginPath(); ctx.ellipse(cx,cy,Math.max(rx,8),Math.max(ry,8),0,0,2*Math.PI); ctx.stroke();
+  } else if(s.type === 'rect'){
+    ctx.strokeRect(Math.min(s.x1,s.x2), Math.min(s.y1,s.y2), Math.abs(s.x2-s.x1), Math.abs(s.y2-s.y1));
+  } else if(s.type === 'arrow'){
+    ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke();
+    const angle = Math.atan2(s.y2-s.y1, s.x2-s.x1);
+    ctx.beginPath();
+    ctx.moveTo(s.x2, s.y2);
+    ctx.lineTo(s.x2 - 14*Math.cos(angle-0.4), s.y2 - 14*Math.sin(angle-0.4));
+    ctx.lineTo(s.x2 - 14*Math.cos(angle+0.4), s.y2 - 14*Math.sin(angle+0.4));
+    ctx.closePath(); ctx.fill();
+  } else if(s.type === 'text'){
+    ctx.font = 'bold 18px IBM Plex Mono, monospace';
+    ctx.fillText(s.text, s.x, s.y);
+  }
+}
+
+function redrawCanvas(){
+  const canvas = document.getElementById('mk-canvas');
+  if(!canvas || !canvasCtx) return;
+  canvasCtx.clearRect(0,0,canvas.width,canvas.height);
+  if(baseImg && baseImg.complete) canvasCtx.drawImage(baseImg, 0,0,canvas.width,canvas.height);
+  const p = currentPhoto();
+  if(p) p.annotations.forEach(a=> drawShape(canvasCtx, a));
+}
+
+function generateCaption(){
+  const p = currentPhoto();
+  const obs = document.getElementById('obs-input').value.trim();
+  const loc = document.getElementById('loc-input').value.trim();
+  const out = document.getElementById('caption-text');
+  if(!p.annotations.length){
+    out.textContent = 'Marque a ocorrência na foto antes de gerar a legenda.';
+    return;
+  }
+  if(!obs){
+    out.textContent = 'Descreva o que foi observado para a IA compor a legenda.';
+    return;
+  }
+  const obsCap = obs.charAt(0).toUpperCase() + obs.slice(1);
+  const roomPhrase = ROOM_META[p.room].prep;
+  const caption = `${obsCap} observada${loc ? ' na ' + loc : ''} da ${roomPhrase} do apartamento ${p.apt}.`;
+  out.textContent = caption;
+  p.caption = caption;
+  p.marked = true;
+  updateSideStats();
+  const item = document.querySelector(`#mk-list [data-id="${p.id}"]`);
+  if(item && !item.querySelector('.ok')){
+    const ok = document.createElement('span'); ok.className='ok'; ok.textContent='✓';
+    item.appendChild(ok);
+  }
+  toast('Legenda gerada e foto marcada como concluída.');
+}
+
+/* ---------- 06 REPORT ---------- */
+function renderReport(main){
+  const marked = PHOTOS.filter(p=>p.marked && !p.excluded);
+  const unmarked = PHOTOS.filter(p=>!p.marked && !p.excluded).length;
+  const apts = APARTMENTS;
+
+  let body = '';
+  apts.forEach(apt=>{
+    const aptPhotos = marked.filter(p=>p.apt===apt.id);
+    if(!aptPhotos.length) return;
+    body += `<div class="apt-block"><div class="apt-block-head">${apt.common ? apt.id : 'APARTAMENTO '+apt.id}</div>`;
+    apt.rooms.forEach(room=>{
+      const photos = aptPhotos.filter(p=>p.room===room);
+      if(!photos.length) return;
+      body += `<h4 class="room-report-title">${ROOM_META[room].label}</h4><div class="report-grid">`;
+      photos.forEach(p=>{
+        body += `<div class="report-card"><div class="frame"><img src="${p.img}"></div><div class="cap">${p.caption}</div></div>`;
+      });
+      body += `</div>`;
+    });
+    body += `</div>`;
+  });
+
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Relatório fotográfico</h2>
+        <p>Fotos marcadas, organizadas por apartamento e ambiente, prontas para exportação.</p>
+      </div>
+      <div class="stat-strip stage-enter-child">
+        <div class="s"><div class="v mono">${marked.length}</div><div class="l">fotos com legenda</div></div>
+        <div class="s"><div class="v mono">${PHOTOS.filter(p=>p.excluded).length}</div><div class="l">excluídas da vistoria</div></div>
+        <div class="s"><div class="v mono">~2,4h</div><div class="l">tempo estimado economizado</div></div>
+      </div>
+      ${unmarked > 0 ? `<div class="warn-box stage-enter-child">${unmarked} fotos ainda sem legenda. Volte à etapa de marcação para concluí-las antes de exportar o laudo final.</div>` : ''}
+      <div class="report-toolbar stage-enter-child">
+        <div class="export-buttons">
+          <button class="btn btn-primary" id="exp-docx">Exportar Word (.docx)</button>
+          <button class="btn btn-ghost" id="exp-pdf">Exportar PDF</button>
+          <button class="btn btn-ghost" id="exp-zip">Baixar imagens (.zip)</button>
+        </div>
+      </div>
+      <div class="stage-enter-child">
+        ${marked.length ? body : '<p style="color:var(--graphite);">Nenhuma foto marcada ainda — volte à etapa de marcação.</p>'}
+      </div>
+    </div>
+  `;
+
+  ['exp-docx','exp-pdf','exp-zip'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('click', ()=> toast('Gerando arquivo... (simulação de demonstração — sem exportação real)'));
+  });
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+initTheme();
+setStageEnabled('upload');
+goStage('upload');
+</script>
+
+</body>
+</html>
