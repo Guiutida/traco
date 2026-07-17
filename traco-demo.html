@@ -159,42 +159,26 @@
     letter-spacing:0.04em;
   }
   .stage-nav{ display:flex; flex-direction:column; gap:2px; }
-  .stage-btn{
+  .menu-btn{
     text-align:left;
     background:none;
     border:none;
     color:#9AA39F;
-    padding:11px 10px;
+    padding:12px 14px;
     border-radius:2px;
-    font-size:13.5px;
+    font-size:14px;
+    font-family:'IBM Plex Sans', sans-serif;
     cursor:pointer;
     display:flex;
     align-items:center;
     gap:10px;
     transition:all .15s ease;
+    width: 100%;
   }
-  .stage-btn .n{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
-    color:#6E7773;
-    width:16px;
-    transition: color .15s ease;
-  }
-  .stage-btn:hover{ background:rgba(237,234,225,0.06); color:#DCD8CC; }
-  .stage-btn.active{ background:rgba(237,234,225,0.09); color:#F7F5EF; }
-  .stage-btn.active .n{ color:var(--redline); }
-  .stage-btn:disabled{ opacity:0.35; cursor:not-allowed; }
+  .menu-btn:hover{ background:rgba(237,234,225,0.06); color:#DCD8CC; }
+  .menu-btn.active{ background:rgba(237,234,225,0.09); color:#F7F5EF; border-left:3px solid var(--gold,#C4962A); font-weight:600; }
+  .menu-btn:disabled{ opacity:0.35; cursor:not-allowed; }
 
-  .side-stats{
-    margin-top:auto;
-    border-top:1px solid rgba(237,234,225,0.14);
-    padding-top:16px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .side-stat{ display:flex; justify-content:space-between; font-size:12px; color:#9AA39F; }
-  .side-stat b{ font-family:'IBM Plex Mono', monospace; color:#F0EEE5; font-weight:500; }
 
   /* ============ TOPBAR ============ */
   .topbar{
@@ -731,11 +715,98 @@
   .room-row{ display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px solid var(--line); }
   .room-row:last-child{ border-bottom:none; }
   .room-row b{ font-family:'IBM Plex Mono',monospace; color:var(--ink); }
-  @media (max-width:860px){
-    .stats-dash-grid{ grid-template-columns:1fr; }
-    .report-type-card{ padding:14px 16px; }
-    .sev-group{ gap:4px; }
-    .sev-btn{ font-size:10.5px; padding:7px 3px; }
+  }
+
+  /* ============ STEP WIZARD ============ */
+  .wizard-wrap {
+    background: var(--surface); border: 1px solid var(--line-strong);
+    border-radius: 3px; padding: 18px 24px; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; overflow-x: auto; gap: 14px;
+    transition: var(--transition-theme);
+  }
+  .wizard-step {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    flex: 1; position: relative; cursor: pointer; z-index: 2; background: none;
+    border: none; padding: 0; color: var(--graphite); font-family: 'IBM Plex Sans', sans-serif;
+    outline: none;
+  }
+  .wizard-step:disabled { cursor: not-allowed; opacity: 0.4; }
+  .wizard-step .circle {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1.5px solid var(--line-strong); background: var(--paper-2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; margin-bottom: 6px;
+    transition: all 0.2s ease; color: var(--graphite);
+  }
+  .wizard-step.active .circle {
+    border-color: var(--gold,#C4962A); background: var(--gold,#C4962A);
+    color: white; box-shadow: 0 0 0 3px rgba(196,150,42,0.18);
+  }
+  .wizard-step.completed .circle {
+    border-color: var(--gold,#C4962A); background: var(--gold,#C4962A);
+    color: white;
+  }
+  .wizard-step .label { font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+  .wizard-step.active .label { color: var(--ink); font-weight: 600; }
+  
+  .wizard-line {
+    position: absolute; top: 31px; left: 60px; right: 60px;
+    height: 2px; background: var(--line-strong); z-index: 1;
+  }
+  .wizard-line-fill { height: 100%; background: var(--gold,#C4962A); width: 0%; transition: width 0.3s ease; }
+
+  /* ============ WORKSPACE STATS BAR ============ */
+  .card-stats-bar {
+    display: flex; gap: 12px; background: var(--surface); border: 1px solid var(--line-strong);
+    border-radius: 3px; padding: 12px 20px; margin-bottom: 20px;
+    align-items: center; flex-wrap: wrap; transition: var(--transition-theme);
+  }
+  .card-stat-item {
+    font-size: 12.5px; color: var(--graphite); display: flex; align-items: center;
+    gap: 6px; border-right: 1px solid var(--line-strong); padding-right: 14px;
+  }
+  .card-stat-item:last-child { border-right: none; padding-right: 0; }
+  .card-stat-item b { font-family: 'IBM Plex Mono', monospace; color: var(--ink); font-size: 13.5px; }
+
+  /* ============ LAUDO HISTORY SCREEN ============ */
+  .history-container {
+    background: var(--surface); border: 1px solid var(--line-strong);
+    border-radius: 3px; padding: 24px; margin-bottom: 24px;
+    transition: var(--transition-theme);
+  }
+  .history-header { margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+  .history-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .history-card {
+    background: var(--paper-2); border: 1px solid var(--line-strong);
+    border-radius: 3px; padding: 16px 20px; display: flex;
+    justify-content: space-between; align-items: center;
+    transition: all 0.2s ease;
+  }
+  .history-card:hover { border-color: var(--gold,#C4962A); transform: translateY(-1.5px); }
+  .history-info { flex: 1; }
+  .history-title { font-size: 16px; font-weight: 600; color: var(--ink); margin: 0 0 6px; }
+  .history-meta { font-size: 12.5px; color: var(--graphite); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .history-badge {
+    background: var(--blueprint-soft); color: var(--blueprint);
+    padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500;
+  }
+  .history-badge.cautelar { background: rgba(196,150,42,0.12); color: var(--gold,#C4962A); }
+  .history-badge.patologia { background: rgba(220,38,38,0.12); color: #DC2626; }
+  .history-badge.inspecao { background: rgba(5,150,105,0.12); color: #059669; }
+  .history-badge.locaticia { background: rgba(37,99,235,0.12); color: #2563EB; }
+  .history-badge.status-ok { background: rgba(16,185,129,0.12); color: #10B981; }
+  .history-badge.status-progress { background: rgba(245,158,11,0.12); color: #F59E0B; }
+  .history-actions { display: flex; gap: 8px; }
+  
+  @media (max-width:860px) {
+    .wizard-wrap { padding: 12px 14px; gap: 8px; }
+    .wizard-step .circle { width: 22px; height: 22px; font-size: 10px; }
+    .wizard-step .label { font-size: 10px; }
+    .wizard-line { top: 23px; left: 40px; right: 40px; }
+    .history-card { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .history-actions { width: 100%; }
+    .history-actions button { flex: 1; text-align: center; }
   }
 </style>
 </head>
@@ -762,20 +833,10 @@
       </div>
       <div style="margin-top:10px;"><span class="demo-badge">DEMONSTRAÇÃO · DADOS SIMULADOS</span></div>
     </div>
-    <nav class="stage-nav" id="stage-nav">
-      <button class="stage-btn" data-stage="upload"><span class="n">01</span>Upload</button>
-      <button class="stage-btn" data-stage="processing" disabled><span class="n">02</span>Processamento</button>
-      <button class="stage-btn" data-stage="checkpoint" disabled><span class="n">03</span>Identificação de unidades</button>
-      <button class="stage-btn" data-stage="organize" disabled><span class="n">04</span>Organização &amp; revisão</button>
-      <button class="stage-btn" data-stage="markup" disabled><span class="n">05</span>Marcação manual</button>
-      <button class="stage-btn" data-stage="report" disabled><span class="n">06</span>Relatório &amp; exportação</button>
+    <nav class="stage-nav" id="menu-nav">
+      <button class="menu-btn active" data-menu="laudos">📋 Vistorias / Laudos</button>
+      <button class="menu-btn" data-menu="historico">🕒 Histórico de Laudos</button>
     </nav>
-    <div class="side-stats">
-      <div class="side-stat"><span>Fotos carregadas</span><b id="s-total">0</b></div>
-      <div class="side-stat"><span>Ambientes</span><b id="s-rooms">0</b></div>
-      <div class="side-stat"><span>Legendadas</span><b id="s-marked">0/0</b></div>
-      <div class="side-stat"><span>Excluídas</span><b id="s-excluded">0</b></div>
-    </div>
   </aside>
 
   <div>
@@ -1110,6 +1171,8 @@ let STATE = {
   severity: 'media',
   captionHistory: [],
   customTypeName: '',
+  activeMenu: 'laudos',
+  enabledStages: ['upload'],
 };
 
 /* =========================================================
@@ -1169,24 +1232,31 @@ function toast(msg){
 function updateSideStats(){
   const active = PHOTOS.filter(p=>!p.excluded);
   const rooms = new Set(active.map(p=>p.room));
-  document.getElementById('s-total').textContent = PHOTOS.length ? PHOTOS.length : '0';
-  document.getElementById('s-rooms').textContent = rooms.size;
-  document.getElementById('s-marked').textContent = `${active.filter(p=>p.marked).length}/${active.length}`;
-  document.getElementById('s-excluded').textContent = PHOTOS.filter(p=>p.excluded).length;
+  const totalEl = document.getElementById('s-total');
+  const roomsEl = document.getElementById('s-rooms');
+  const markedEl = document.getElementById('s-marked');
+  const excludedEl = document.getElementById('s-excluded');
+  if(totalEl) totalEl.textContent = PHOTOS.length ? PHOTOS.length : '0';
+  if(roomsEl) roomsEl.textContent = rooms.size;
+  if(markedEl) markedEl.textContent = `${active.filter(p=>p.marked).length}/${active.length}`;
+  if(excludedEl) excludedEl.textContent = PHOTOS.filter(p=>p.excluded).length;
 }
 
 function setStageEnabled(stage){
-  const order = ['upload','processing','checkpoint','organize','markup','report'];
-  const idx = order.indexOf(stage);
-  document.querySelectorAll('.stage-btn').forEach(btn=>{
-    const bIdx = order.indexOf(btn.dataset.stage);
-    if(bIdx <= idx) btn.disabled = false;
-  });
+  if(!STATE.enabledStages) STATE.enabledStages = ['upload'];
+  if(!STATE.enabledStages.includes(stage)){
+    STATE.enabledStages.push(stage);
+  }
+  render();
+}
+
+function isStageEnabled(stage){
+  if(!STATE.enabledStages) STATE.enabledStages = ['upload'];
+  return STATE.enabledStages.includes(stage);
 }
 
 function goStage(stage){
   STATE.stage = stage;
-  document.querySelectorAll('.stage-btn').forEach(b=> b.classList.toggle('active', b.dataset.stage === stage));
   const labels = {
     upload:'ETAPA 01 · UPLOAD',
     processing:'ETAPA 02 · PROCESSAMENTO',
@@ -1195,33 +1265,267 @@ function goStage(stage){
     markup:'ETAPA 05 · MARCAÇÃO MANUAL',
     report:'ETAPA 06 · RELATÓRIO & EXPORTAÇÃO'
   };
-  document.getElementById('topbar-stage').textContent = labels[stage];
+  const tb = document.getElementById('topbar-stage');
+  if(tb) tb.textContent = labels[stage] || '';
   const mobileBar = document.getElementById('mobile-stage-bar');
-  mobileBar.textContent = labels[stage];
-  mobileBar.style.display = window.innerWidth <= 860 ? 'flex' : 'none';
+  if(mobileBar){
+    mobileBar.textContent = labels[stage] || '';
+    mobileBar.style.display = window.innerWidth <= 860 ? 'flex' : 'none';
+  }
   render();
   updateSideStats();
   window.scrollTo({top:0, behavior:'smooth'});
   closeSidebar();
 }
 
-document.getElementById('stage-nav').addEventListener('click', (e)=>{
-  const btn = e.target.closest('.stage-btn');
-  if(btn && !btn.disabled) goStage(btn.dataset.stage);
-});
+// Menu Nav Listener
+setTimeout(() => {
+  const menuNav = document.getElementById('menu-nav');
+  if(menuNav){
+    menuNav.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.menu-btn');
+      if(btn){
+        document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        STATE.activeMenu = btn.dataset.menu;
+        render();
+      }
+    });
+  }
+}, 50);
 
 /* =========================================================
-   RENDER: STAGE ROUTER
+   RENDER: STAGE ROUTER & HISTORY
    ========================================================= */
 function render(){
   const main = document.getElementById('main');
-  if(STATE.stage === 'upload') return renderUpload(main);
-  if(STATE.stage === 'processing') return renderProcessing(main);
-  if(STATE.stage === 'checkpoint') return renderCheckpoint(main);
-  if(STATE.stage === 'organize') return renderOrganize(main);
-  if(STATE.stage === 'markup') return renderMarkup(main);
-  if(STATE.stage === 'report') return renderReport(main);
+  if(!main) return;
+
+  if(STATE.activeMenu === 'historico'){
+    return renderHistory(main);
+  }
+
+  // Else: laudos flow
+  const order = ['upload','processing','checkpoint','organize','markup','report'];
+  const currentIdx = order.indexOf(STATE.stage);
+  const percent = (currentIdx / (order.length - 1)) * 100;
+
+  const labels = {
+    upload: 'Upload',
+    processing: 'Processamento',
+    checkpoint: 'Unidades',
+    organize: 'Organização',
+    markup: 'Marcação',
+    report: 'Relatório'
+  };
+
+  let wizardHtml = `
+    <div class="wizard-wrap stage-enter-child">
+      <div class="wizard-line">
+        <div class="wizard-line-fill" style="width: ${percent}%;"></div>
+      </div>
+  `;
+  order.forEach((stg, idx) => {
+    const isActive = STATE.stage === stg;
+    const isCompleted = currentIdx > idx;
+    const isDisabled = !isStageEnabled(stg);
+    wizardHtml += `
+      <button class="wizard-step ${isActive?'active':''} ${isCompleted?'completed':''}" data-stage="${stg}" ${isDisabled?'disabled':''}>
+        <div class="circle">${isCompleted?'✓':(idx+1)}</div>
+        <div class="label">${labels[stg]}</div>
+      </button>
+    `;
+  });
+  wizardHtml += `</div>`;
+
+  const activePhotos = PHOTOS.filter(p=>!p.excluded);
+  const rooms = new Set(activePhotos.map(p=>p.room));
+  const statsHtml = `
+    <div class="card-stats-bar stage-enter-child">
+      <div class="card-stat-item">📁 Fotos carregadas: <b id="s-total">${PHOTOS.length}</b></div>
+      <div class="card-stat-item">🏠 Ambientes: <b id="s-rooms">${rooms.size}</b></div>
+      <div class="card-stat-item">✍️ Legendadas: <b id="s-marked">${activePhotos.filter(p=>p.marked).length}/${activePhotos.length}</b></div>
+      <div class="card-stat-item">🗑️ Excluídas: <b id="s-excluded">${PHOTOS.filter(p=>p.excluded).length}</b></div>
+    </div>
+  `;
+
+  main.innerHTML = `
+    ${wizardHtml}
+    ${statsHtml}
+    <div id="stage-content"></div>
+  `;
+
+  // Bind clicks on wizard
+  document.querySelectorAll('.wizard-step').forEach(btn => {
+    btn.addEventListener('click', () => {
+      goStage(btn.dataset.stage);
+    });
+  });
+
+  const stageContent = document.getElementById('stage-content');
+  if(STATE.stage === 'upload') renderUpload(stageContent);
+  else if(STATE.stage === 'processing') renderProcessing(stageContent);
+  else if(STATE.stage === 'checkpoint') renderCheckpoint(stageContent);
+  else if(STATE.stage === 'organize') renderOrganize(stageContent);
+  else if(STATE.stage === 'markup') renderMarkup(stageContent);
+  else if(STATE.stage === 'report') renderReport(stageContent);
 }
+
+function renderHistory(main){
+  const completedReports = [
+    {
+      id: 'aurora',
+      name: 'Edifício Residencial Aurora',
+      type: STATE.reportType,
+      typeLabel: (REPORT_TYPES[STATE.reportType] || REPORT_TYPES.cautelar).label,
+      date: '17/07/2026',
+      photosCount: PHOTOS.length || 342,
+      markedCount: PHOTOS.filter(p=>p.marked && !p.excluded).length,
+      status: PHOTOS.some(p=>p.marked) ? 'Concluído' : 'Em andamento',
+      statusCode: PHOTOS.some(p=>p.marked) ? 'ok' : 'progress',
+      isCurrent: true
+    },
+    {
+      id: 'horizon',
+      name: 'Condomínio Grand Horizon',
+      type: 'patologia',
+      typeLabel: 'Laudo Técnico de Patologia',
+      date: '12/07/2026',
+      photosCount: 14,
+      markedCount: 14,
+      status: 'Concluído',
+      statusCode: 'ok',
+      isCurrent: false
+    },
+    {
+      id: 'villa',
+      name: 'Residencial Villa Lobos',
+      type: 'inspecao',
+      typeLabel: 'Inspeção Predial (NBR 16747)',
+      date: '05/07/2026',
+      photosCount: 8,
+      markedCount: 8,
+      status: 'Concluído',
+      statusCode: 'ok',
+      isCurrent: false
+    }
+  ];
+
+  main.innerHTML = `
+    <div class="stage-enter">
+      <div class="stage-head stage-enter-child">
+        <h2>Histórico de Vistorias &amp; Laudos</h2>
+        <p>Acompanhe e visualize relatórios e laudos gerados anteriormente pela JR Engenharia.</p>
+      </div>
+
+      <div class="history-container stage-enter-child">
+        <div class="history-header">
+          <h3 style="margin:0 0 4px;font-size:16px;">Vistorias Registradas</h3>
+          <span style="font-size:12.5px;color:var(--graphite);">Exibindo os laudos mais recentes no servidor</span>
+        </div>
+
+        <div class="history-grid">
+          ${completedReports.map(rep => `
+            <div class="history-card">
+              <div class="history-info">
+                <h4 class="history-title">${rep.name}</h4>
+                <div class="history-meta">
+                  <span class="history-badge ${rep.type}">${rep.typeLabel}</span>
+                  <span>📅 ${rep.date}</span>
+                  <span>📁 <b>${rep.photosCount}</b> fotos</span>
+                  <span class="history-badge status-${rep.statusCode}">${rep.status}</span>
+                </div>
+              </div>
+              <div class="history-actions">
+                ${rep.isCurrent 
+                  ? `<button class="btn btn-primary btn-sm" id="btn-open-current">Continuar Vistoria</button>`
+                  : `<button class="btn btn-ghost btn-sm btn-view-past" data-id="${rep.id}">Visualizar Laudo</button>`
+                }
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const openCurrent = document.getElementById('btn-open-current');
+  if(openCurrent){
+    openCurrent.addEventListener('click', () => {
+      STATE.activeMenu = 'laudos';
+      document.querySelectorAll('.menu-btn').forEach(b => b.classList.toggle('active', b.dataset.menu === 'laudos'));
+      render();
+    });
+  }
+
+  document.querySelectorAll('.btn-view-past').forEach(btn => {
+    btn.addEventListener('click', () => {
+      loadPastMockReport(btn.dataset.id);
+    });
+  });
+}
+
+function loadPastMockReport(id){
+  STATE.activeMenu = 'laudos';
+  STATE.stage = 'report';
+  document.querySelectorAll('.menu-btn').forEach(b => b.classList.toggle('active', b.dataset.menu === 'laudos'));
+
+  if(id === 'horizon'){
+    STATE.reportType = 'patologia';
+    PHOTOS = [
+      {
+        id: 'h1',
+        apt: '402',
+        room: 'sacada',
+        img: 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&w=400&q=80',
+        caption: 'Fissura estrutural de tração na laje superior da sacada, com risco de infiltração localizada.',
+        severity: 'grave',
+        marked: true,
+        recommendation: '⚠️ Urgente — Avaliação estrutural por engenheiro calculista'
+      },
+      {
+        id: 'h2',
+        apt: '201',
+        room: 'banheiro',
+        img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80',
+        caption: 'Infiltração ativa com eflorescência no teto do banheiro, indicando vazamento na unidade superior.',
+        severity: 'media',
+        marked: true,
+        recommendation: '📋 A curto prazo — Verificar origem da infiltração — cobertura ou tubulações'
+      }
+    ];
+  } else if(id === 'villa'){
+    STATE.reportType = 'inspecao';
+    PHOTOS = [
+      {
+        id: 'v1',
+        apt: 'Área Comum',
+        room: 'sacada', // mock
+        img: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80',
+        caption: 'Impermeabilização comprometida na laje da cobertura, com pontos de gotejamento na sala de máquinas.',
+        severity: 'media',
+        marked: true,
+        recommendation: '📋 A curto prazo — Recuperação localizada com manta ou cristalização'
+      },
+      {
+        id: 'v2',
+        apt: 'Área Comum',
+        room: 'cozinha', // mock
+        img: 'https://images.unsplash.com/photo-1558224494-ef8b217500d6?auto=format&fit=crop&w=400&q=80',
+        caption: 'Quadro elétrico geral sem identificação de circuitos e sem proteção contra choques DR.',
+        severity: 'grave',
+        marked: true,
+        recommendation: '⚠️ Urgente — Instalação de disjuntores DR conforme NBR 5410'
+      }
+    ];
+  }
+
+  STATE.enabledStages = ['upload', 'processing', 'checkpoint', 'organize', 'markup', 'report'];
+  render();
+  updateSideStats();
+  toast('Laudo histórico carregado com sucesso!');
+}
+
 
 /* ---------- 01 UPLOAD ---------- */
 function renderUpload(main){
