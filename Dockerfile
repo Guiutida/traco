@@ -1,4 +1,5 @@
-FROM nginx:alpine
-COPY traco-demo.html /usr/share/nginx/html/index.html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+FROM python:3.12-alpine
+WORKDIR /app
+COPY traco-demo.html index.html
 EXPOSE 3000
+CMD ["python3", "-m", "http.server", "3000"]
